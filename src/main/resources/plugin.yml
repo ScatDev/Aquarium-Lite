@@ -1,0 +1,4 @@
+name: Aquarium
+descripion: anticheat
+main: dev.scat.aquarium.Aquarium
+authors: [Scat]
