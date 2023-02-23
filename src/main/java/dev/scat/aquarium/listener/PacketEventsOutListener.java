@@ -3,6 +3,9 @@ package dev.scat.aquarium.listener;
 import com.github.retrooper.packetevents.event.PacketListenerAbstract;
 import com.github.retrooper.packetevents.event.PacketListenerPriority;
 import com.github.retrooper.packetevents.event.PacketSendEvent;
+import dev.scat.aquarium.Aquarium;
+import dev.scat.aquarium.data.PlayerData;
+import org.bukkit.entity.Player;
 
 public class PacketEventsOutListener extends PacketListenerAbstract {
 
@@ -12,6 +15,10 @@ public class PacketEventsOutListener extends PacketListenerAbstract {
 
     @Override
     public void onPacketSend(PacketSendEvent event) {
+        PlayerData data = Aquarium.getInstance().getPlayerDataManager().get((Player) event.getPlayer());
 
+        if (data == null) return;
+
+        data.handle(event);
     }
 }
