@@ -6,19 +6,28 @@ import lombok.Getter;
 
 @Getter
 public enum Config {
-    PREFIX("prefix", "x");
+    PREFIX("prefix", "x"),
+    ALERT_MESSAGE("alert-message", "&8[&cA&8] &%player% &ffailed %type% &7(&c%name%&7) &fx%vl%"),
+    HOVER_MESSAGE("hover-message", "%f%info%\n\n&cClick to teleport!"),
+    BYPASS_PUNISHMENT("bypass-punishment", true),
+    PUNISH_COMMAND("punish-command", "ban %player% Aquarium Anticheat");
 
-    private final String path, value;
+    private final String path;
+    private final Object value;
 
-    Config(String path, String value) {
-       this.path = path;
+    Config(String path, Object value) {
+        this.path = path;
 
         if (Aquarium.getInstance().getConfig().contains(path)) {
-            this.value = ColorUtil.translate((String) Aquarium.getInstance().getConfig().get(path));
+            this.value = Aquarium.getInstance().getConfig().get(path);
         } else {
             Aquarium.getInstance().getConfig().set(path, value);
 
-            this.value = ColorUtil.translate(value);
+            this.value = value;
         }
+    }
+
+    public String translate() {
+        return ColorUtil.translate((String) value);
     }
 }

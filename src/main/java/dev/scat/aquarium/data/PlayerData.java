@@ -2,9 +2,11 @@ package dev.scat.aquarium.data;
 
 import com.github.retrooper.packetevents.event.PacketReceiveEvent;
 import com.github.retrooper.packetevents.event.PacketSendEvent;
+import dev.scat.aquarium.Aquarium;
 import dev.scat.aquarium.data.processor.Processor;
 import dev.scat.aquarium.util.PacketUtil;
 import lombok.Getter;
+import lombok.Setter;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -19,8 +21,15 @@ public class PlayerData {
 
     private int tick;
 
+    @Setter
+    private boolean alerting, punishing;
+
     public PlayerData(Player player) {
         this.player = player;
+
+        if (player.hasPermission("aquarium.alerts")) {
+            alerting = true;
+        }
     }
 
     public void handle(PacketReceiveEvent event) {
