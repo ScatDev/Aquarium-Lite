@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public abstract class Processor {
 
-    private final PlayerData data;
+    protected final PlayerData data;
 
     public void handle(PacketReceiveEvent event) {}
     public void handle(PacketSendEvent event) {}
