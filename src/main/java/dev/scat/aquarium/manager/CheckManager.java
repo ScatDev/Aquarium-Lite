@@ -10,8 +10,8 @@ import java.util.List;
 public class CheckManager {
 
     public List<Check> loadChecks(PlayerData data) {
-     return Arrays.asList(
+        return Arrays.asList(
              new SpeedA(data)
-     );
+        );
     }
 }

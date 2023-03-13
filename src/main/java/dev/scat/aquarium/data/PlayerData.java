@@ -44,7 +44,7 @@ public class PlayerData {
 
         processors.forEach(processor -> processor.handle(event));
 
-        checks.forEach(check -> check.handle(event));
+        checks.stream().filter(Check::isEnabled).forEach(check -> check.handle(event));
     }
 
     public void handle(PacketSendEvent event) {
