@@ -15,7 +15,11 @@ public class PacketEventsInListener extends PacketListenerAbstract {
 
     @Override
     public void onPacketReceive(PacketReceiveEvent event) {
-        PlayerData data = Aquarium.getInstance().getPlayerDataManager().get((Player) event.getPlayer());
+        Player player = (Player) event.getPlayer();
+
+        if (player == null) return;
+
+        PlayerData data = Aquarium.getInstance().getPlayerDataManager().get(player);
 
         if (data == null) return;
 

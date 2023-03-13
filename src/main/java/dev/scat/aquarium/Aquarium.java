@@ -2,9 +2,11 @@ package dev.scat.aquarium;
 
 import com.github.retrooper.packetevents.PacketEvents;
 import dev.scat.aquarium.config.CheckConfig;
+import dev.scat.aquarium.config.Config;
 import dev.scat.aquarium.listener.BukkitListener;
 import dev.scat.aquarium.listener.PacketEventsInListener;
 import dev.scat.aquarium.listener.PacketEventsOutListener;
+import dev.scat.aquarium.manager.CheckManager;
 import dev.scat.aquarium.manager.PlayerDataManager;
 import io.github.retrooper.packetevents.factory.spigot.SpigotPacketEventsBuilder;
 import lombok.Getter;
@@ -22,8 +24,8 @@ public class Aquarium extends JavaPlugin {
     private static Aquarium instance;
 
     private final PlayerDataManager playerDataManager = new PlayerDataManager();
+    private final CheckManager checkManager = new CheckManager();
 
-    private final FileConfiguration config = getConfig();
     private final CheckConfig checkConfig = new CheckConfig();
 
     @Override

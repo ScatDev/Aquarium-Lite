@@ -1,6 +1,7 @@
 package dev.scat.aquarium.check;
 
 import com.github.retrooper.packetevents.event.PacketReceiveEvent;
+import com.github.retrooper.packetevents.event.PacketSendEvent;
 import com.github.retrooper.packetevents.event.simple.PacketPlaySendEvent;
 import dev.scat.aquarium.Aquarium;
 import dev.scat.aquarium.config.Config;
@@ -31,7 +32,7 @@ public abstract class Check {
     }
     
     public void handle(PacketReceiveEvent event) {}
-    public void handle(PacketPlaySendEvent event) {}
+    public void handle(PacketSendEvent event) {}
 
     public void flag(String info) {
         ++vl;
@@ -58,7 +59,7 @@ public abstract class Check {
         alert.setClickEvent(
                 new ClickEvent(
                         ClickEvent.Action.RUN_COMMAND,
-                        "tp " + data.getPlayer().getName()
+                        "/tp " + data.getPlayer().getName()
                 )
         );
 
