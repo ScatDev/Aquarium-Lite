@@ -1,9 +1,10 @@
-package dev.scat.aquarium.data.processor;
+package dev.scat.aquarium.data.processor.impl;
 
 import com.github.retrooper.packetevents.event.PacketReceiveEvent;
 import com.github.retrooper.packetevents.util.Vector3d;
 import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientPlayerFlying;
 import dev.scat.aquarium.data.PlayerData;
+import dev.scat.aquarium.data.processor.Processor;
 import dev.scat.aquarium.util.PacketUtil;
 import lombok.Getter;
 
@@ -23,8 +24,6 @@ public class PositionProcessor extends Processor {
         if (PacketUtil.isPosition(event.getPacketType())) {
             WrapperPlayClientPlayerFlying flying = new WrapperPlayClientPlayerFlying(event);
 
-            Vector3d loc = flying.getLocation().getPosition();
-
             lastX = x;
             lastY = y;
             lastZ = z;
@@ -33,9 +32,9 @@ public class PositionProcessor extends Processor {
             lastDeltaZ = deltaZ;
             lastDeltaXZ = deltaXZ;
 
-            x = loc.getX();
-            y = loc.getY();
-            z = loc.getZ();
+            x = flying.getLocation().getX();
+            y = flying.getLocation().getZ();
+            z = flying.getLocation().getZ();
 
             deltaX = x - lastX;
             deltaY = y - lastY;

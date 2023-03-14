@@ -16,10 +16,6 @@ public class SpeedA extends Check {
     public void handle(PacketReceiveEvent event) {
         if (PacketUtil.isPosition(event.getPacketType())) {
             double deltaXZ = data.getPositionProcessor().getDeltaXZ();
-
-            if (deltaXZ > 0.3) {
-                flag("dxz=" + deltaXZ);
-            }
         }
     }
 }

@@ -18,4 +18,9 @@ public class PacketUtil {
         return type == PacketType.Play.Client.PLAYER_POSITION
                 || type == PacketType.Play.Client.PLAYER_POSITION_AND_ROTATION;
     }
+
+    public boolean isRotation(PacketTypeCommon type) {
+        return type == PacketType.Play.Client.PLAYER_ROTATION
+                || type == PacketType.Play.Client.PLAYER_POSITION_AND_ROTATION;
+    }
 }
