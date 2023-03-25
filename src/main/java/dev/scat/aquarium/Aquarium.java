@@ -32,6 +32,8 @@ public class Aquarium extends JavaPlugin {
 
     private final CheckConfig checkConfig = new CheckConfig();
 
+    private int tick;
+
     @Override
     public void onLoad() {
         instance = this;
@@ -56,6 +58,10 @@ public class Aquarium extends JavaPlugin {
 
         Bukkit.getPluginManager().registerEvents(new BukkitListener(), this);
         Bukkit.getPluginManager().registerEvents(new PledgeListener(), this);
+
+        Bukkit.getScheduler().runTaskTimer(this, () -> {
+            ++tick;
+        }, 0L, 1L);
     }
 
     @Override
