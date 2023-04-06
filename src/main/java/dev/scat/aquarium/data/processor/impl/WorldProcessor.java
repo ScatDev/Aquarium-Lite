@@ -5,8 +5,6 @@ import com.github.retrooper.packetevents.protocol.packettype.PacketType;
 import com.github.retrooper.packetevents.protocol.world.chunk.BaseChunk;
 import com.github.retrooper.packetevents.protocol.world.states.WrappedBlockState;
 import com.github.retrooper.packetevents.wrapper.play.server.*;
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
 import dev.scat.aquarium.data.PlayerData;
 import dev.scat.aquarium.data.processor.Processor;
 import lombok.Getter;
@@ -20,7 +18,7 @@ public class WorldProcessor extends Processor {
     // Not perfect, doesn't handle trans split and another rare issue ;)
     // Still better than 90% of anticheats and most paid anticheats
 
-    private final Map<Long, BaseChunk[]> possibleChunks = new HashMap<>();
+    private final Map<Long, BaseChunk[]> chunks = new HashMap<>();
 
     public WorldProcessor(PlayerData data) {
         super(data);
@@ -31,12 +29,20 @@ public class WorldProcessor extends Processor {
         if (event.getPacketType() == PacketType.Play.Server.CHUNK_DATA) {
             WrapperPlayServerChunkData mapChunk = new WrapperPlayServerChunkData(event);
 
-            Bukkit.broadcastMessage("chunk x=" + (mapChunk.getColumn().getX() << 4) + " z=" + (mapChunk.getColumn().getZ() << 4));
-
             data.getPledgeProcessor().confirmPre(() -> {
                 long xz = toLong(mapChunk.getColumn().getX() << 4, mapChunk.getColumn().getZ() << 4);
 
-                possibleChunks.put(xz, mapChunk.getColumn().getChunks());
+                if (chunks.containsKey(xz)) {
+                    BaseChunk[] chunks = this.chunks.get(xz);
+
+                    for (int i = 0; i < 15; i++) {
+                        if (mapChunk.getColumn().getChunks()[i] != null) {
+                            chunks[i] = mapChunk.getColumn().getChunks()[i];
+                        }
+                    }
+                } else {
+                    chunks.put(xz, mapChunk.getColumn().getChunks());
+                }
             });
         } else if (event.getPacketType() == PacketType.Play.Server.MAP_CHUNK_BULK) {
             WrapperPlayServerChunkDataBulk mapChunkBulk = new WrapperPlayServerChunkDataBulk(event);
@@ -48,7 +54,17 @@ public class WorldProcessor extends Processor {
 
                     long xz = toLong(x, z);
 
-                    possibleChunks.put(xz, mapChunkBulk.getChunks()[i]);
+                    if (chunks.containsKey(xz)) {
+                        BaseChunk[] chunks = this.chunks.get(xz);
+
+                        for (int i2 = 0; i2 < 15; i2++) {
+                            if (mapChunkBulk.getChunks()[i][i2] != null) {
+                                chunks[i2] = mapChunkBulk.getChunks()[i][i2];
+                            }
+                        }
+                    } else {
+                        chunks.put(xz, mapChunkBulk.getChunks()[i]);
+                    }
                 }
             });
         } else if (event.getPacketType() == PacketType.Play.Server.UNLOAD_CHUNK) {
@@ -57,21 +73,21 @@ public class WorldProcessor extends Processor {
             long xz = toLong(unloadChunk.getChunkX(), unloadChunk.getChunkZ());
 
             data.getPledgeProcessor().confirmPost(() -> {
-                possibleChunks.remove(xz);
+                chunks.remove(xz);
             });
         } else if (event.getPacketType() == PacketType.Play.Server.BLOCK_CHANGE) {
             WrapperPlayServerBlockChange blockChange = new WrapperPlayServerBlockChange(event);
 
             long xz = toLong(blockChange.getBlockPosition().getZ(), blockChange.getBlockPosition().getZ());
 
-            int x = ((blockChange.getBlockPosition().getX() % 16) * 16;
-            int y = ((blockChange.getBlockPosition().getY() % 16) * 16;
-            int z = ((blockChange.getBlockPosition().getZ() % 16) * 16;
+            int x = (blockChange.getBlockPosition().getX() % 16) * 16;
+            int y = (blockChange.getBlockPosition().getY() % 16) * 16;
+            int z = (blockChange.getBlockPosition().getZ() % 16) * 16;
             int dividedY = (int) Math.floor(blockChange.getBlockPosition().getY() / 16D);
 
             data.getPledgeProcessor().confirmPre(() -> {
-                if (possibleChunks.containsKey(xz)) {
-                    possibleChunks.get(xz)[dividedY].set(x, y, z, blockChange.getBlockId());
+                if (chunks.containsKey(xz)) {
+                    chunks.get(xz)[dividedY].set(x, y, z, blockChange.getBlockId());
                 }
             });
         } else if (event.getPacketType() == PacketType.Play.Server.MULTI_BLOCK_CHANGE) {
@@ -93,9 +109,9 @@ public class WorldProcessor extends Processor {
         int chunkX = ((x % 16) * 16);
         int chunkZ = ((z % 16) * 16);
 
-        if (possibleChunks.containsKey(xz)) {
-            for (ChunkColumn column : possibleChunks.get(xz)) {
-                possibleBlocks.add(column.getBlock(chunkX, y, chunkZ));
+        if (chunks.containsKey(xz)) {
+            for (BaseChunk chunk : chunks.get(xz)) {
+//                possibleBlocks.add(chunk.getBlock(chunkX, y, chunkZ));
             }
         }
 
