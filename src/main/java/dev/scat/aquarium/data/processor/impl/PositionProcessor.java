@@ -33,7 +33,7 @@ public class PositionProcessor extends Processor {
             lastDeltaXZ = deltaXZ;
 
             x = flying.getLocation().getX();
-            y = flying.getLocation().getZ();
+            y = flying.getLocation().getY();
             z = flying.getLocation().getZ();
 
             deltaX = x - lastX;
