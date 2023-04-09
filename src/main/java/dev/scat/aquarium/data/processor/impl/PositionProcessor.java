@@ -15,12 +15,18 @@ public class PositionProcessor extends Processor {
             deltaX, deltaY, deltaZ, deltaXZ,
             lastDeltaX, lastDeltaY, lastDeltaZ, lastDeltaXZ;
 
+    private boolean sentPosition;
+
     public PositionProcessor(PlayerData data) {
         super(data);
     }
 
     @Override
-    public void handle(PacketReceiveEvent event) {
+    public void handlePre(PacketReceiveEvent event) {
+        if (PacketUtil.isFlying(event.getPacketType())) {
+            sentPosition = false;
+        }
+
         if (PacketUtil.isPosition(event.getPacketType())) {
             WrapperPlayClientPlayerFlying flying = new WrapperPlayClientPlayerFlying(event);
 
@@ -41,6 +47,8 @@ public class PositionProcessor extends Processor {
             deltaZ = z - lastZ;
 
             deltaXZ = Math.hypot(deltaX, deltaZ);
+
+            sentPosition = true;
         }
     }
 }

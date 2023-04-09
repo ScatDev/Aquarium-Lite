@@ -20,7 +20,7 @@ public class RotationProcessor extends Processor {
         super(data);
     }
 
-    public void handle(PacketReceiveEvent event) {
+    public void handlePre(PacketReceiveEvent event) {
         if (PacketUtil.isRotation(event.getPacketType())) {
             WrapperPlayClientPlayerFlying flying = new WrapperPlayClientPlayerFlying(event);
 

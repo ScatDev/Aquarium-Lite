@@ -40,7 +40,7 @@ public class WorldProcessor extends Processor {
     }
 
     @Override
-    public void handle(PacketSendEvent event) {
+    public void handlePre(PacketSendEvent event) {
         if (event.getPacketType() == PacketType.Play.Server.CHUNK_DATA) {
             WrapperPlayServerChunkData mapChunk = new WrapperPlayServerChunkData(event);
 
@@ -141,7 +141,7 @@ public class WorldProcessor extends Processor {
         }
     }
 
-    public void handle(PacketReceiveEvent event) {
+    public void handlePre(PacketReceiveEvent event) {
         if (event.getPacketType() == PacketType.Play.Client.PLAYER_BLOCK_PLACEMENT) {
             WrapperPlayClientPlayerBlockPlacement blockPlace = new WrapperPlayClientPlayerBlockPlacement(event);
 

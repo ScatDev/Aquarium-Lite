@@ -6,11 +6,8 @@ import com.github.retrooper.packetevents.event.PacketSendEvent;
 import com.github.retrooper.packetevents.protocol.player.ClientVersion;
 import dev.scat.aquarium.Aquarium;
 import dev.scat.aquarium.check.Check;
-import dev.scat.aquarium.data.processor.impl.PledgeProcessor;
-import dev.scat.aquarium.data.processor.impl.PositionProcessor;
+import dev.scat.aquarium.data.processor.impl.*;
 import dev.scat.aquarium.data.processor.Processor;
-import dev.scat.aquarium.data.processor.impl.RotationProcessor;
-import dev.scat.aquarium.data.processor.impl.WorldProcessor;
 import dev.scat.aquarium.util.PacketUtil;
 import lombok.Getter;
 import lombok.Setter;
@@ -30,6 +27,7 @@ public class PlayerData {
     private final RotationProcessor rotationProcessor = new RotationProcessor(this);
     private final WorldProcessor worldProcessor = new WorldProcessor(this);
     private final PledgeProcessor pledgeProcessor = new PledgeProcessor(this);
+    private final EntityProcessor entityProcessor = new EntityProcessor(this);
     
     private final List<Check> checks = Aquarium.getInstance().getCheckManager().loadChecks(this);
 
@@ -46,6 +44,7 @@ public class PlayerData {
         processors.add(rotationProcessor);
         processors.add(worldProcessor);
         processors.add(pledgeProcessor);
+        processors.add(entityProcessor);
 
         if (player.hasPermission("aquarium.alerts")) {
             alerting = true;
@@ -55,14 +54,18 @@ public class PlayerData {
     public void handle(PacketReceiveEvent event) {
         if (PacketUtil.isFlying(event.getPacketType())) ++tick;
 
-        processors.forEach(processor -> processor.handle(event));
+        processors.forEach(processor -> processor.handlePre(event));
 
         checks.stream().filter(Check::isEnabled).forEach(check -> check.handle(event));
+
+        processors.forEach(processor -> processor.handlePost(event));
     }
 
     public void handle(PacketSendEvent event) {
-        processors.forEach(processor -> processor.handle(event));
+        processors.forEach(processor -> processor.handlePre(event));
 
         checks.stream().filter(Check::isEnabled).forEach(check -> check.handle(event));
+
+        processors.forEach(processor -> processor.handlePost(event));
     }
 }

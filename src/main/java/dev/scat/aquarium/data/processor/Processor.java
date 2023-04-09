@@ -10,6 +10,8 @@ public abstract class Processor {
 
     protected final PlayerData data;
 
-    public void handle(PacketReceiveEvent event) {}
-    public void handle(PacketSendEvent event) {}
+    public void handlePre(PacketReceiveEvent event) {}
+    public void handlePre(PacketSendEvent event) {}
+    public void handlePost(PacketReceiveEvent event) {}
+    public void handlePost(PacketSendEvent event) {}
 }
