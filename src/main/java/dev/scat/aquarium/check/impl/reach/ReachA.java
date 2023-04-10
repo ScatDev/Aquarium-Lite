@@ -50,15 +50,16 @@ public class ReachA extends Check {
 
             AxisAlignedBB aabb = entity.getBoundingBox();
 
-            if (data.getVersion().isOlderThanOrEquals(ClientVersion.V_1_8))
-                aabb.expand(0.1, 0.1, 0.1);
+            if (data.getVersion().isOlderThanOrEquals(ClientVersion.V_1_8)) {
+                aabb = aabb.expand(0.1F, 0.1F, 0.1F);
+            }
 
             Vec3 eyePos = new Vec3(x, y, z);
 
             Vec3[] rotations = {
                     PlayerUtil.getVectorForRotation(data.getRotationProcessor().getPitch(),
                             data.getRotationProcessor().getYaw()),
-                    PlayerUtil.getVectorForRotation(data.getRotationProcessor().getLastPitch(),
+                    PlayerUtil.getVectorForRotation(data.getRotationProcessor().getPitch(),
                             data.getRotationProcessor().getLastYaw())
             };
 
@@ -75,7 +76,7 @@ public class ReachA extends Check {
                 }
             }
 
-            Bukkit.broadcastMessage("distance=" + distance);
+            data.getPlayer().sendMessage("distance=" + distance);
         }
     }
 }

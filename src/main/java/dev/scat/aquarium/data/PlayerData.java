@@ -26,7 +26,7 @@ public class PlayerData {
     private final PositionProcessor positionProcessor = new PositionProcessor(this);
     private final RotationProcessor rotationProcessor = new RotationProcessor(this);
     private final WorldProcessor worldProcessor = new WorldProcessor(this);
-    private final PledgeProcessor pledgeProcessor = new PledgeProcessor(this);
+    private final TransactionProcessor pledgeProcessor = new TransactionProcessor(this);
     private final EntityProcessor entityProcessor = new EntityProcessor(this);
     
     private final List<Check> checks = Aquarium.getInstance().getCheckManager().loadChecks(this);

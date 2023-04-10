@@ -8,31 +8,45 @@ import lombok.Setter;
 @Setter
 public class TrackedEntity {
 
-    private int interpolationSteps;
-    private double posX, posY, posZ, serverX, serverY, serverZ;
+    private int interpolationSteps, serverX, serverY, serverZ;
+    private double posX, posY, posZ, mpX, mpY, mpZ;
 
-    public TrackedEntity(double posX, double posY, double posZ) {
-        this.posX = posX;
-        this.posY = posY;
-        this.posZ = posZ;
+    public TrackedEntity(double x, double y, double z) {
+        serverX = (int) Math.round(x * 32D);
+        serverY = (int) Math.round(y * 32D);
+        serverZ = (int) Math.round(z * 32D);
+
+        posX = serverX / 32D;
+        posY = serverY / 32D;
+        posZ = serverZ / 32D;
     }
 
     public void interpolate() {
-        if (interpolationSteps > 3) {
-            posX = posX + (serverX - posX) / (double) interpolationSteps;
-            posY = posY + (serverY - posY) / (double) interpolationSteps;
-            posZ = posZ + (serverZ - posZ) / (double) interpolationSteps;
+        if (interpolationSteps > 0) {
+            double x = posX + (mpX - posX) / (double) interpolationSteps;
+            double y = posY + (mpY - posY) / (double) interpolationSteps;
+            double z = posZ + (mpZ - posZ) / (double) interpolationSteps;
 
             --interpolationSteps;
+
+            posX = x;
+            posY = y;
+            posZ = z;
         }
     }
 
     public void handleMovement(double x, double y, double z) {
-        serverX += x;
-        serverY += y;
-        serverZ += z;
+        mpX = x;
+        mpY = y;
+        mpZ = z;
 
         interpolationSteps = 3;
+    }
+
+    public void setServerPos(int x, int y, int z) {
+        serverX = x;
+        serverY = y;
+        serverZ = z;
     }
 
     public AxisAlignedBB getBoundingBox() {

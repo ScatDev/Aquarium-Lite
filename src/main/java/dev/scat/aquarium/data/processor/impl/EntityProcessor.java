@@ -37,60 +37,66 @@ public class EntityProcessor extends Processor {
 
             TrackedEntity entity = new TrackedEntity(x, y, z);
 
-            data.getPledgeProcessor().confirmPre(()
+            data.getPledgeProcessor().sendTransaction(()
                     -> trackedEntities.put(spawnPlayer.getEntityId(), entity));
         } else if (event.getPacketType() == PacketType.Play.Server.ENTITY_RELATIVE_MOVE) {
             WrapperPlayServerEntityRelativeMove relMove = new WrapperPlayServerEntityRelativeMove(event);
 
-            double x = relMove.getDeltaX();
-            double y = relMove.getDeltaZ();
-            double z = relMove.getDeltaZ();
+            int x = (int) Math.round(relMove.getDeltaX() * 32D);
+            int y = (int) Math.round(relMove.getDeltaY() * 32D);
+            int z = (int) Math.round(relMove.getDeltaZ() * 32D);
 
             int id = relMove.getEntityId();
 
-            data.getPledgeProcessor().confirmPre(() -> {
+            data.getPledgeProcessor().sendTransaction(() -> {
                 TrackedEntity entity = trackedEntities.get(id);
 
                 if (entity != null) {
-                    entity.handleMovement(x, y, z);
+                    entity.setServerPos(entity.getServerX() + x, entity.getServerY() + y, entity.getServerZ() + z);
+
+                    entity.handleMovement(entity.getServerX() / 32D, entity.getServerY() / 32D, entity.getServerZ() / 32D);
                 }
             });
         } else if (event.getPacketType() == PacketType.Play.Server.ENTITY_RELATIVE_MOVE_AND_ROTATION) {
             WrapperPlayServerEntityRelativeMoveAndRotation relMove =
                     new WrapperPlayServerEntityRelativeMoveAndRotation(event);
 
-            double x = relMove.getDeltaX();
-            double y = relMove.getDeltaZ();
-            double z = relMove.getDeltaZ();
+            int x = (int) Math.round(relMove.getDeltaX() * 32D);
+            int y = (int) Math.round(relMove.getDeltaY() * 32D);
+            int z = (int) Math.round(relMove.getDeltaZ() * 32D);
 
             int id = relMove.getEntityId();
 
-            data.getPledgeProcessor().confirmPre(() -> {
+            data.getPledgeProcessor().sendTransaction(() -> {
                 TrackedEntity entity = trackedEntities.get(id);
 
                 if (entity != null) {
-                    entity.handleMovement(x, y, z);
+                    entity.setServerPos(entity.getServerX() + x, entity.getServerY() + y, entity.getServerZ() + z);
+
+                    entity.handleMovement(entity.getServerX() / 32D, entity.getServerY() / 32D, entity.getServerZ() / 32D);
                 }
             });
         } else if (event.getPacketType() == PacketType.Play.Server.ENTITY_TELEPORT) {
             WrapperPlayServerEntityTeleport entityTeleport = new WrapperPlayServerEntityTeleport(event);
 
-            double x = entityTeleport.getPosition().getX();
-            double y = entityTeleport.getPosition().getY();
-            double z = entityTeleport.getPosition().getZ();
+            int x = (int) Math.round(entityTeleport.getPosition().getX() * 32D);
+            int y = (int) Math.round(entityTeleport.getPosition().getY() * 32D);
+            int z = (int) Math.round(entityTeleport.getPosition().getZ() * 32D);
 
             int id = entityTeleport.getEntityId();
 
-            data.getPledgeProcessor().confirmPre(() -> {
+            data.getPledgeProcessor().sendTransaction(() -> {
                 TrackedEntity entity = trackedEntities.get(id);
 
                 if (entity != null) {
-                    if (Math.abs(entity.getPosX() - x) < 0.03125D
-                            && Math.abs(entity.getPosY() - y) < 0.015625D
-                            && Math.abs(entity.getPosZ() - z) < 0.03125D) {
+                    entity.setServerPos(x, y, z);
+
+                    if (Math.abs(entity.getPosX() - (x / 32D)) < 0.03125D
+                            && Math.abs(entity.getPosY() - (y / 32D)) < 0.015625D
+                            && Math.abs(entity.getPosZ() - (z / 32D)) < 0.03125D) {
                         entity.handleMovement(entity.getPosX(), entity.getPosY(), entity.getPosZ());
                     } else {
-                        entity.handleMovement(x, y, z);
+                        entity.handleMovement(entity.getServerX() / 32D, entity.getServerY() / 32D, entity.getServerZ() / 32D);
                     }
                 }
             });
@@ -107,5 +113,11 @@ public class EntityProcessor extends Processor {
         if (PacketUtil.isFlying(event.getPacketType())) {
             trackedEntities.values().forEach(TrackedEntity::interpolate);
         }
+
+//        if (trackedEntities.values().stream().findFirst().isPresent()) {
+//            TrackedEntity entity = trackedEntities.values().stream().findFirst().get();
+//
+//            data.getPlayer().sendMessage(entity.getPosX() + " " + entity.getPosY() + " " + entity.getPosZ());
+//        }
     }
 }

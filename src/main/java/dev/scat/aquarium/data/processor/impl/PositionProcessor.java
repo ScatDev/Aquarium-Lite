@@ -25,10 +25,6 @@ public class PositionProcessor extends Processor {
     public void handlePre(PacketReceiveEvent event) {
         if (PacketUtil.isFlying(event.getPacketType())) {
             sentPosition = false;
-        }
-
-        if (PacketUtil.isPosition(event.getPacketType())) {
-            WrapperPlayClientPlayerFlying flying = new WrapperPlayClientPlayerFlying(event);
 
             lastX = x;
             lastY = y;
@@ -38,17 +34,21 @@ public class PositionProcessor extends Processor {
             lastDeltaZ = deltaZ;
             lastDeltaXZ = deltaXZ;
 
-            x = flying.getLocation().getX();
-            y = flying.getLocation().getY();
-            z = flying.getLocation().getZ();
+            if (PacketUtil.isPosition(event.getPacketType())) {
+                WrapperPlayClientPlayerFlying flying = new WrapperPlayClientPlayerFlying(event);
 
-            deltaX = x - lastX;
-            deltaY = y - lastY;
-            deltaZ = z - lastZ;
+                x = flying.getLocation().getX();
+                y = flying.getLocation().getY();
+                z = flying.getLocation().getZ();
 
-            deltaXZ = Math.hypot(deltaX, deltaZ);
+                deltaX = x - lastX;
+                deltaY = y - lastY;
+                deltaZ = z - lastZ;
 
-            sentPosition = true;
+                deltaXZ = Math.hypot(deltaX, deltaZ);
+
+                sentPosition = true;
+            }
         }
     }
 }

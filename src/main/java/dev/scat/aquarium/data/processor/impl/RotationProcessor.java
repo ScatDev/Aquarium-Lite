@@ -21,21 +21,23 @@ public class RotationProcessor extends Processor {
     }
 
     public void handlePre(PacketReceiveEvent event) {
-        if (PacketUtil.isRotation(event.getPacketType())) {
-            WrapperPlayClientPlayerFlying flying = new WrapperPlayClientPlayerFlying(event);
-
+        if (PacketUtil.isFlying(event.getPacketType())) {
             lastYaw = yaw;
             lastPitch = pitch;
             lastDeltaYaw = deltaYaw;
             lastDeltaPitch = deltaPitch;
 
-            yaw = flying.getLocation().getYaw();
-            pitch = flying.getLocation().getPitch();
+            if (PacketUtil.isRotation(event.getPacketType())) {
+                WrapperPlayClientPlayerFlying flying = new WrapperPlayClientPlayerFlying(event);
 
-            deltaYaw = MathUtil.angleDistance(yaw, lastYaw);
-            deltaPitch = MathUtil.angleDistance(pitch, lastPitch);
+                yaw = flying.getLocation().getYaw();
+                pitch = flying.getLocation().getPitch();
 
-            // Basic cinematic processing here
+                deltaYaw = MathUtil.angleDistance(yaw, lastYaw);
+                deltaPitch = MathUtil.angleDistance(pitch, lastPitch);
+
+                // Basic cinematic processing here
+            }
         }
     }
 }
