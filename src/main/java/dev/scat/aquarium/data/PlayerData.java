@@ -28,6 +28,7 @@ public class PlayerData {
     private final WorldProcessor worldProcessor = new WorldProcessor(this);
     private final TransactionProcessor pledgeProcessor = new TransactionProcessor(this);
     private final EntityProcessor entityProcessor = new EntityProcessor(this);
+    private final CollisionProcessor collisionProcessor = new CollisionProcessor(this);
     
     private final List<Check> checks = Aquarium.getInstance().getCheckManager().loadChecks(this);
 
@@ -45,6 +46,7 @@ public class PlayerData {
         processors.add(worldProcessor);
         processors.add(pledgeProcessor);
         processors.add(entityProcessor);
+        processors.add(collisionProcessor);
 
         if (player.hasPermission("aquarium.alerts")) {
             alerting = true;
