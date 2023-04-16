@@ -11,7 +11,11 @@ public enum Config {
     ALERT_MESSAGE("alert-message", "&8[&cA&8] &c%player% &ffailed &c%type% &7(&c%name%&7) &fx%vl%"),
     HOVER_MESSAGE("hover-message", "%info%\n\n&cClick to teleport!"),
     BYPASS_PUNISHMENT("bypass-punishment", true),
-    PUNISH_COMMAND("punish-command", "ban %player% Aquarium Anticheat");
+    PUNISH_COMMAND("punish-command", "ban %player% Aquarium Anticheat"),
+    PLAYER_ONLY_MESSAGE("player-only-message", "&cThis command is player only!"),
+    NO_PERMISSION_MESSAGE("no-permission-message", "&cNo permission."),
+    ALERTS_DISABLED_MESSAGE("alerts-disabled-message", "&cYou have disabled your anticheat alerts."),
+    ALERTS_ENABLED_MESSAGE("alerts-enabled-message", "&aYou have enabled your anticheat alerts.");
 
     private final String path;
     private final Object value;

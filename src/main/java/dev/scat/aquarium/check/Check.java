@@ -20,6 +20,7 @@ public abstract class Check {
     private final String type, name;
     private boolean enabled, punish;
     private int maxVl, vl;
+    private String punishCommand;
 
     public Check(PlayerData data, String type, String name) {
         this.data = data;
@@ -29,6 +30,8 @@ public abstract class Check {
         enabled = Aquarium.getInstance().getCheckConfig().isEnabled(type, name);
         punish = Aquarium.getInstance().getCheckConfig().isPunishable(type, name);
         maxVl = Aquarium.getInstance().getCheckConfig().getMaxVl(type, name);
+        punishCommand = Aquarium.getInstance().getCheckConfig().getPunishCommand(type, name)
+                .replaceAll("%player%", data.getPlayer().getName());
     }
     
     public void handle(PacketReceiveEvent event) {}
@@ -63,7 +66,7 @@ public abstract class Check {
                 )
         );
 
-        // Should make a list of alerting players but im too lazy rn
+        // could make a list of alerting players but im too lazy rn
         Aquarium.getInstance().getPlayerDataManager().getValues().stream()
                 .filter(PlayerData::isAlerting)
                 .forEach(data -> data.getPlayer().spigot().sendMessage(alert));
@@ -74,9 +77,7 @@ public abstract class Check {
             data.setPunishing(true);
 
             Bukkit.getScheduler().runTask(Aquarium.getInstance(),
-                    () -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(),
-                            Config.PUNISH_COMMAND.translate().replaceAll("%player%",
-                                    data.getPlayer().getName())));
+                    () -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), punishCommand));
         }
     }
 }

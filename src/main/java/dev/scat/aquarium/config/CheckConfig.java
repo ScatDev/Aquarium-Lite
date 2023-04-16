@@ -46,4 +46,14 @@ public class CheckConfig {
             return 25;
         }
     }
+
+    public String getPunishCommand(String type, String name) {
+        String path = "checks." + type.toLowerCase() + "." + name.toLowerCase() + ".max-vl";
+
+        if (config.contains(path)) {
+            return (String) config.get(path);
+        } else {
+            return Config.PUNISH_COMMAND.translate();
+        }
+    }
 }
