@@ -11,6 +11,8 @@ public enum Config {
     ALERT_MESSAGE("alert-message", "&8[&cA&8] &c%player% &ffailed &c%type% &7(&c%name%&7) &fx%vl%"),
     HOVER_MESSAGE("hover-message", "%info%\n\n&cClick to teleport!"),
     BYPASS_PUNISHMENT("bypass-punishment", true),
+    VL_RESET_DELAY("vl-reset-delay", 600),
+    DATABASE_TYPE("database-type", "flat-file"),
     PUNISH_COMMAND("punish-command", "ban %player% Aquarium Anticheat"),
     PLAYER_ONLY_MESSAGE("player-only-message", "&cThis command is player only!"),
     NO_PERMISSION_MESSAGE("no-permission-message", "&cNo permission."),

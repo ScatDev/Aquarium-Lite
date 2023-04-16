@@ -1,6 +1,7 @@
 package dev.scat.aquarium.manager;
 
 import com.github.retrooper.packetevents.protocol.packettype.PacketType;
+import com.github.retrooper.packetevents.protocol.player.User;
 import dev.scat.aquarium.data.PlayerData;
 import org.bukkit.entity.Player;
 
@@ -17,12 +18,12 @@ public class PlayerDataManager {
         dataMap.put(player.getUniqueId(), new PlayerData(player));
     }
 
-    public void remove(Player player) {
-        dataMap.remove(player.getUniqueId());
+    public void remove(UUID uuid) {
+        dataMap.remove(uuid);
     }
 
-    public PlayerData get(Player player) {
-        return dataMap.get(player.getUniqueId());
+    public PlayerData get(UUID uuid) {
+        return dataMap.get(uuid);
     }
 
     public Collection<PlayerData> getValues() {

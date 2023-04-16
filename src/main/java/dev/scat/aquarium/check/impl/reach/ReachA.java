@@ -21,7 +21,7 @@ public class ReachA extends Check {
     private final static boolean[] BOOLEANS = {true, false};
 
     public ReachA(PlayerData data) {
-        super(data, "Reach", "A", 0);
+        super(data, "Reach", "A");
     }
 
     @Override

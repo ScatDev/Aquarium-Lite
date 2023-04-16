@@ -13,7 +13,7 @@ import org.bukkit.GameMode;
 public class FlyA extends Check {
 
     public FlyA(PlayerData data) {
-        super(data, "Fly", "A", 3);
+        super(data, "Fly", "A");
     }
 
     @Override
@@ -38,7 +38,7 @@ public class FlyA extends Check {
                 abilitiesProcessor.getAbilities().isFlightAllowed() ||
                 abilitiesProcessor.getAbilities().isFlying()) {
 
-            buffer.reduce(0.25);
+            buffer = Math.max(0, buffer - 0.25);
             return;
         }
 
@@ -48,12 +48,11 @@ public class FlyA extends Check {
         final double acceleration = Math.abs(ascension);
 
         if (acceleration < 1E-3 || ascension > 0.03) {
-            if(buffer.fail()) {
-                buffer.reset();
+            if(++buffer > 3) {
                 flag("ASC=" + ascension + " ACL=" + acceleration);
             }
-        } else buffer.reduce(0.1);
-
-
+        } else {
+            buffer = Math.max(0, buffer - 0.25);
+        }
     }
 }

@@ -29,7 +29,8 @@ public class AlertsCommand implements CommandExecutor {
             return false;
         }
 
-        PlayerData data = Aquarium.getInstance().getPlayerDataManager().get((Player) sender);
+        PlayerData data = Aquarium.getInstance().getPlayerDataManager()
+                .get(((Player) sender).getUniqueId());
 
         if (data.isAlerting()) {
             data.setAlerting(false);
