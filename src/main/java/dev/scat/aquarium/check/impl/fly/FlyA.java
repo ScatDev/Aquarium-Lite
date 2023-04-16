@@ -34,6 +34,7 @@ public class FlyA extends Check {
                 collisionProcessor.getClientAirTicks() < airTicksLimit ||
                 abilitiesProcessor.getAbilities().isCreativeMode() ||
                 data.getPlayer().getGameMode() == GameMode.SPECTATOR ||
+                !data.getPlayer().getLocation().getChunk().isLoaded() ||
                 abilitiesProcessor.getAbilities().isFlightAllowed() ||
                 abilitiesProcessor.getAbilities().isFlying()) {
 
