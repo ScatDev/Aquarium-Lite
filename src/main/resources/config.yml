@@ -1,0 +1,16 @@
+prefix: "x"
+alert-message: "&8[&cA&8] &c%player% &ffailed &c%type% &7(&c%name%&7) &fx%vl%"
+hover-message: "%info%\n\n&cClick to teleport!"
+bypass-punishment: true
+punish-command: ban %player% Aquarium Anticheat
+checks:
+  reach:
+    a:
+      enabled: true
+      punishable: false
+      max-vl: 20
+  fly:
+    a:
+      enabled: true
+      punishable: false
+      max-vl: 20

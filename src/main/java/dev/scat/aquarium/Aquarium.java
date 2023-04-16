@@ -1,7 +1,7 @@
 package dev.scat.aquarium;
 
 import com.github.retrooper.packetevents.PacketEvents;
-import dev.scat.aquarium.command.AlertsCommand;
+//import dev.scat.aquarium.command.AlertsCommand;
 import dev.scat.aquarium.config.CheckConfig;
 import dev.scat.aquarium.config.Config;
 import dev.scat.aquarium.listener.BukkitListener;
@@ -57,7 +57,7 @@ public class Aquarium extends JavaPlugin {
                 new PacketEventsOutListener()
         );
 
-        getCommand("alerts").setExecutor(new AlertsCommand());
+        //getCommand("alerts").setExecutor(new AlertsCommand());
 
         Bukkit.getPluginManager().registerEvents(new BukkitListener(), this);
         Bukkit.getPluginManager().registerEvents(new PledgeListener(), this);

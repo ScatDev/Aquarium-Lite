@@ -29,8 +29,10 @@ public class PlayerData {
     private final TransactionProcessor pledgeProcessor = new TransactionProcessor(this);
     private final EntityProcessor entityProcessor = new EntityProcessor(this);
     private final CollisionProcessor collisionProcessor = new CollisionProcessor(this);
+    private final AbilitiesProcessor abilitiesProcessor = new AbilitiesProcessor(this);
+    private final PotionProcessor potionProcessor = new PotionProcessor(this);
     
-    private final List<Check> checks = Aquarium.getInstance().getCheckManager().loadChecks(this);
+    private final List<Check> checks;
 
     private int tick;
 
@@ -47,10 +49,14 @@ public class PlayerData {
         processors.add(pledgeProcessor);
         processors.add(entityProcessor);
         processors.add(collisionProcessor);
+        processors.add(potionProcessor);
+        processors.add(abilitiesProcessor);
 
         if (player.hasPermission("aquarium.alerts")) {
             alerting = true;
         }
+
+        this.checks = Aquarium.getInstance().getCheckManager().loadChecks(this);
     }
 
     public void handle(PacketReceiveEvent event) {

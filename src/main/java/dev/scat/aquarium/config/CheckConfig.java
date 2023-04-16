@@ -51,7 +51,7 @@ public class CheckConfig {
         String path = "checks." + type.toLowerCase() + "." + name.toLowerCase() + ".max-vl";
 
         if (config.contains(path)) {
-            return (String) config.get(path);
+            return config.getString(path);
         } else {
             return Config.PUNISH_COMMAND.translate();
         }

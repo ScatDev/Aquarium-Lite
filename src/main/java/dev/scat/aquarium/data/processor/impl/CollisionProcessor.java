@@ -3,6 +3,7 @@ package dev.scat.aquarium.data.processor.impl;
 import com.github.retrooper.packetevents.event.PacketReceiveEvent;
 import com.github.retrooper.packetevents.protocol.world.states.defaulttags.BlockTags;
 import com.github.retrooper.packetevents.protocol.world.states.type.StateTypes;
+import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientPlayerFlying;
 import dev.scat.aquarium.data.PlayerData;
 import dev.scat.aquarium.data.processor.Processor;
 import dev.scat.aquarium.util.PacketUtil;
@@ -29,9 +30,11 @@ public class CollisionProcessor extends Processor {
             bonking, lastBonking,
             sideHoney, lastSideHoney,
             onHoney, lastOnHoney,
-            nearWall, lastNearWall;
+            nearWall, lastNearWall,
+            clientGround, lastClientGround;
 
     private AxisAlignedBB sideBB, verticalBB;
+    private int clientAirTicks, clientGroundTicks;
 
     public CollisionProcessor(PlayerData data) {
         super(data);
@@ -83,11 +86,21 @@ public class CollisionProcessor extends Processor {
 
                 inWater = PlayerUtil.isInWater(data);
                 inLava = PlayerUtil.isInLava(data);
+
+
             }
+
+            final WrapperPlayClientPlayerFlying wrapper = new WrapperPlayClientPlayerFlying(event);
+
+            clientGround = wrapper.isOnGround();
+
+            clientGroundTicks = clientGround ? clientGroundTicks + 1 : 0;
+            clientAirTicks = clientGround ? 0 : clientAirTicks + 1;
         }
     }
 
     private void actualize() {
+        lastClientGround = clientGround;
         lastOnSlime = onSlime;
         lastOnIce = onIce;
         lastInWeb = inWeb;
