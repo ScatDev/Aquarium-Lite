@@ -18,8 +18,10 @@ public class ReachA extends Check {
     private int id;
     private boolean attacked;
 
+    private final static boolean[] BOOLEANS = {true, false};
+
     public ReachA(PlayerData data) {
-        super(data, "Reach", "A");
+        super(data, "Reach", "A", 0);
     }
 
     @Override
@@ -39,15 +41,6 @@ public class ReachA extends Check {
 
             if (entity == null) return;
 
-            double x = data.getPositionProcessor().getLastX();
-
-            // Switch from player.isSneaking
-            double y = data.getPositionProcessor().getLastY()
-                    + (double) PlayerUtil.getEyeHeight(data.getPlayer().isSneaking());
-            double z = data.getPositionProcessor().getLastZ();
-
-            Vec3 eyePos = new Vec3(x, y, z);
-
             AxisAlignedBB aabb = entity.getBoundingBox();
 
             if (data.getVersion().isOlderThanOrEquals(ClientVersion.V_1_8)) {
@@ -64,23 +57,35 @@ public class ReachA extends Check {
                     PlayerUtil.getVectorForRotation(data.getRotationProcessor().getLastPitch(),
                             data.getRotationProcessor().getLastYaw()),
             };
+            double x = data.getPositionProcessor().getLastX();
+            double z = data.getPositionProcessor().getLastZ();
 
             double distance = 10;
 
-            for (Vec3 rotation : rotations) {
-                Vec3 ray = eyePos.addVector(rotation.xCoord * 6D,
-                        rotation.yCoord * 6D, rotation.zCoord * 6D);
+            for (boolean sneaking : BOOLEANS) {
+                for (Vec3 rotation : rotations) {
 
-                MovingObjectPosition collision = aabb.calculateIntercept(eyePos, ray);
+                    double y = data.getPositionProcessor().getLastY()
+                            + (double) PlayerUtil.getEyeHeight(sneaking);
 
-                if (collision != null) {
-                    distance = Math.min(eyePos.distanceTo(collision.hitVec), distance);
+                    Vec3 eyePos = new Vec3(x, y, z);
+
+                    Vec3 ray = eyePos.addVector(rotation.xCoord * 6D,
+                            rotation.yCoord * 6D, rotation.zCoord * 6D);
+
+                    MovingObjectPosition collision = aabb.calculateIntercept(eyePos, ray);
+
+                    if (collision != null) {
+                        distance = Math.min(eyePos.distanceTo(collision.hitVec), distance);
+                    }
                 }
             }
 
+            final double maxDistance = data.getAbilitiesProcessor().getAbilities().isCreativeMode() ? 4.501D : 3.01D;
+
             // This will false on a lot of stuff
-            if (distance > 3.01) {
-                flag("distance=" + distance);
+            if (distance > maxDistance) {
+                flag((distance == 10 ? "tried to attack oustide of the hitbox" : "reach=" + distance));
             }
         }
     }

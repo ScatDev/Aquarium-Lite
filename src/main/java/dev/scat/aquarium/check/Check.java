@@ -6,6 +6,7 @@ import com.github.retrooper.packetevents.event.simple.PacketPlaySendEvent;
 import dev.scat.aquarium.Aquarium;
 import dev.scat.aquarium.config.Config;
 import dev.scat.aquarium.data.PlayerData;
+import dev.scat.aquarium.util.CBuffer;
 import lombok.Getter;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
@@ -21,11 +22,13 @@ public abstract class Check {
     private boolean enabled, punish;
     private int maxVl, vl;
     private String punishCommand;
+    protected final CBuffer buffer;
 
-    public Check(PlayerData data, String type, String name) {
+    public Check(PlayerData data, String type, String name, double cBuffer) {
         this.data = data;
         this.type = type;
         this.name = name;
+        this.buffer = new CBuffer(cBuffer);
 
         enabled = Aquarium.getInstance().getCheckConfig().isEnabled(type, name);
         punish = Aquarium.getInstance().getCheckConfig().isPunishable(type, name);
