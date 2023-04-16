@@ -8,6 +8,7 @@ import dev.scat.aquarium.data.processor.impl.AbilitiesProcessor;
 import dev.scat.aquarium.data.processor.impl.CollisionProcessor;
 import dev.scat.aquarium.data.processor.impl.PositionProcessor;
 import dev.scat.aquarium.util.PacketUtil;
+import org.bukkit.GameMode;
 
 public class FlyA extends Check {
 
@@ -32,6 +33,7 @@ public class FlyA extends Check {
                 collisionProcessor.isOnClimbable() ||
                 collisionProcessor.getClientAirTicks() < airTicksLimit ||
                 abilitiesProcessor.getAbilities().isCreativeMode() ||
+                data.getPlayer().getGameMode() == GameMode.SPECTATOR ||
                 abilitiesProcessor.getAbilities().isFlightAllowed() ||
                 abilitiesProcessor.getAbilities().isFlying()) {
 
