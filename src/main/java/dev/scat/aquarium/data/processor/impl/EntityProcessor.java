@@ -29,16 +29,12 @@ public class EntityProcessor extends Processor {
         if (event.getPacketType() == PacketType.Play.Server.SPAWN_PLAYER) {
             WrapperPlayServerSpawnPlayer spawnPlayer = new WrapperPlayServerSpawnPlayer(event);
 
-            Bukkit.broadcastMessage("spawned player");
-
             double x = spawnPlayer.getPosition().getX();
             double y = spawnPlayer.getPosition().getY();
             double z = spawnPlayer.getPosition().getZ();
 
-            TrackedEntity entity = new TrackedEntity(x, y, z);
-
             data.getPledgeProcessor().sendTransaction(()
-                    -> trackedEntities.put(spawnPlayer.getEntityId(), entity));
+                    -> trackedEntities.put(spawnPlayer.getEntityId(), new TrackedEntity(x, y, z)));
         } else if (event.getPacketType() == PacketType.Play.Server.ENTITY_RELATIVE_MOVE) {
             WrapperPlayServerEntityRelativeMove relMove = new WrapperPlayServerEntityRelativeMove(event);
 

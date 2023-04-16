@@ -14,29 +14,25 @@ public class RotationProcessor extends Processor {
     private float yaw, pitch, lastYaw, lastPitch, deltaYaw,
             deltaPitch, lastDeltaYaw, lastDeltaPitch;
 
-    private boolean cinematic;
-
     public RotationProcessor(PlayerData data) {
         super(data);
     }
 
     public void handlePre(PacketReceiveEvent event) {
         if (PacketUtil.isFlying(event.getPacketType())) {
+            WrapperPlayClientPlayerFlying flying = new WrapperPlayClientPlayerFlying(event);
+
             lastYaw = yaw;
             lastPitch = pitch;
             lastDeltaYaw = deltaYaw;
             lastDeltaPitch = deltaPitch;
 
-            if (PacketUtil.isRotation(event.getPacketType())) {
-                WrapperPlayClientPlayerFlying flying = new WrapperPlayClientPlayerFlying(event);
-
+            if (flying.hasRotationChanged()) {
                 yaw = flying.getLocation().getYaw();
                 pitch = flying.getLocation().getPitch();
 
                 deltaYaw = MathUtil.angleDistance(yaw, lastYaw);
                 deltaPitch = MathUtil.angleDistance(pitch, lastPitch);
-
-                // Basic cinematic processing here
             }
         }
     }

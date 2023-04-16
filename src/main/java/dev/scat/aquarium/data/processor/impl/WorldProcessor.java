@@ -169,7 +169,8 @@ public class WorldProcessor extends Processor {
         if (chunks.containsKey(xz)) {
             BaseChunk[] baseChunks = chunks.get(xz);
 
-            if (y < 0 || (y >> 4) > baseChunks.length || baseChunks[y >> 4] == null) return WrappedBlockState.getByGlobalId(0);
+            if (y < 0 || (y >> 4) > baseChunks.length || baseChunks[y >> 4] == null)
+                return WrappedBlockState.getByGlobalId(0);
 
             return baseChunks[y >> 4].get(x & 0xF, y & 0xF, z & 0xF);
         }

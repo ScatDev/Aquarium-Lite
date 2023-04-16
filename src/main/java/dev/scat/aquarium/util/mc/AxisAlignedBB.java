@@ -1,9 +1,10 @@
 package dev.scat.aquarium.util.mc;
 
+import com.github.retrooper.packetevents.protocol.world.states.WrappedBlockState;
 import dev.scat.aquarium.data.PlayerData;
-import dev.scat.aquarium.util.FrenchBlock;
-import io.github.retrooper.packetevents.util.SpigotConversionUtil;
-import org.bukkit.Material;
+import dev.scat.aquarium.util.collision.WrappedBlock;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
@@ -26,15 +27,6 @@ public class AxisAlignedBB {
         this.maxZ = Math.max(z1, z2);
     }
 
-    public AxisAlignedBB(double x, double y, double z) {
-        this.minX = x - 0.3;
-        this.minY = y;
-        this.minZ = z - 0.3;
-        this.maxX = x + 0.3;
-        this.maxY = y + 1.8;
-        this.maxZ = z + 0.3;
-    }
-
     public AxisAlignedBB offsetAndUpdate(double par1, double par3, double par5) {
         this.minX += par1;
         this.minY += par3;
@@ -45,18 +37,15 @@ public class AxisAlignedBB {
         return this;
     }
 
+    public List<WrappedBlock> getBlocks(PlayerData data) {
+        List<WrappedBlock> blocks = new ArrayList<>();
+        for (int x = MathHelper.floor_double(minX); x <= MathHelper.floor_double(maxX); x++) {
+            for (int y = MathHelper.floor_double(minY); y <= MathHelper.floor_double(maxY); y++) {
+                for (int z = MathHelper.floor_double(minZ); z <= MathHelper.floor_double(maxZ); z++) {
+                    WrappedBlockState block = data.getWorldProcessor().getBlock(x, y, z);
 
-    public List<FrenchBlock> getBlocks(PlayerData data) {
-        final Vector min = new Vector(minX, minY, minZ);
-        final Vector max = new Vector(maxX, maxY, maxZ);
-
-        List<FrenchBlock> blocks = new ArrayList<>();
-        for (int x = (int) Math.floor(min.getX()); x < (int) Math.ceil(max.getX()); x++) {
-            for (int y = (int) Math.floor(min.getY()); y < (int) Math.ceil(max.getY()); y++) {
-                for (int z = (int) Math.floor(min.getZ()); z < (int) Math.ceil(max.getZ()); z++) {
-                    Material material = SpigotConversionUtil.toBukkitMaterialData(data.getWorldProcessor().getBlock(x, y, z)).getItemType();
-                    if (material != Material.AIR)
-                        blocks.add(new FrenchBlock(material));
+                    if (!block.getType().isAir())
+                        blocks.add(new WrappedBlock(block.getType(), x, y, z));
                 }
             }
         }

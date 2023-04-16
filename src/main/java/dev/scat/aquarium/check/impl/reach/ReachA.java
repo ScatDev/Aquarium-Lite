@@ -4,7 +4,6 @@ import com.github.retrooper.packetevents.event.PacketReceiveEvent;
 import com.github.retrooper.packetevents.protocol.packettype.PacketType;
 import com.github.retrooper.packetevents.protocol.player.ClientVersion;
 import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientInteractEntity;
-import dev.scat.aquarium.Aquarium;
 import dev.scat.aquarium.check.Check;
 import dev.scat.aquarium.data.PlayerData;
 import dev.scat.aquarium.util.PacketUtil;
@@ -13,7 +12,6 @@ import dev.scat.aquarium.util.TrackedEntity;
 import dev.scat.aquarium.util.mc.AxisAlignedBB;
 import dev.scat.aquarium.util.mc.MovingObjectPosition;
 import dev.scat.aquarium.util.mc.Vec3;
-import org.bukkit.Bukkit;
 
 public class ReachA extends Check {
 
@@ -34,8 +32,8 @@ public class ReachA extends Check {
                 id = useEntity.getEntityId();
             }
         } else if (PacketUtil.isFlying(event.getPacketType())) {
-             if (!attacked) return;
-             attacked = false;
+            if (!attacked) return;
+            attacked = false;
 
             TrackedEntity entity = data.getEntityProcessor().getTrackedEntities().get(id);
 
@@ -48,26 +46,30 @@ public class ReachA extends Check {
                     + (double) PlayerUtil.getEyeHeight(data.getPlayer().isSneaking());
             double z = data.getPositionProcessor().getLastZ();
 
+            Vec3 eyePos = new Vec3(x, y, z);
+
             AxisAlignedBB aabb = entity.getBoundingBox();
 
             if (data.getVersion().isOlderThanOrEquals(ClientVersion.V_1_8)) {
                 aabb = aabb.expand(0.1F, 0.1F, 0.1F);
             }
 
-            Vec3 eyePos = new Vec3(x, y, z);
+            if (data.getPositionProcessor().getTicksSincePosition() > 0) {
+                aabb.expand(0.03, 0.03, 0.03);
+            }
 
             Vec3[] rotations = {
                     PlayerUtil.getVectorForRotation(data.getRotationProcessor().getPitch(),
                             data.getRotationProcessor().getYaw()),
-                    PlayerUtil.getVectorForRotation(data.getRotationProcessor().getPitch(),
-                            data.getRotationProcessor().getLastYaw())
+                    PlayerUtil.getVectorForRotation(data.getRotationProcessor().getLastPitch(),
+                            data.getRotationProcessor().getLastYaw()),
             };
 
             double distance = 10;
 
             for (Vec3 rotation : rotations) {
-                Vec3 ray = eyePos.addVector(rotation.xCoord * 6,
-                        rotation.yCoord * 6, rotation.zCoord * 6);
+                Vec3 ray = eyePos.addVector(rotation.xCoord * 6D,
+                        rotation.yCoord * 6D, rotation.zCoord * 6D);
 
                 MovingObjectPosition collision = aabb.calculateIntercept(eyePos, ray);
 
@@ -76,7 +78,10 @@ public class ReachA extends Check {
                 }
             }
 
-            data.getPlayer().sendMessage("distance=" + distance);
+            // This will false on a lot of stuff
+            if (distance > 3.01) {
+                flag("distance=" + distance);
+            }
         }
     }
 }

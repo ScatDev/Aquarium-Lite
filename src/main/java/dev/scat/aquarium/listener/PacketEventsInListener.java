@@ -24,5 +24,6 @@ public class PacketEventsInListener extends PacketListenerAbstract {
         if (data == null) return;
 
         data.handle(event);
+
     }
 }

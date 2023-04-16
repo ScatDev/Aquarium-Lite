@@ -1,37 +1,37 @@
 package dev.scat.aquarium.data.processor.impl;
 
 import com.github.retrooper.packetevents.event.PacketReceiveEvent;
-import com.github.retrooper.packetevents.protocol.world.Location;
-import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientPlayerFlying;
+import com.github.retrooper.packetevents.protocol.world.states.defaulttags.BlockTags;
+import com.github.retrooper.packetevents.protocol.world.states.type.StateTypes;
 import dev.scat.aquarium.data.PlayerData;
 import dev.scat.aquarium.data.processor.Processor;
-import dev.scat.aquarium.util.FrenchBlock;
+import dev.scat.aquarium.util.PacketUtil;
+import dev.scat.aquarium.util.PlayerUtil;
+import dev.scat.aquarium.util.collision.WrappedBlock;
 import dev.scat.aquarium.util.mc.AxisAlignedBB;
 import lombok.Getter;
+import org.bukkit.util.NumberConversions;
 
 import java.util.List;
 
 @Getter
 public class CollisionProcessor extends Processor {
 
-      /*
-     basically times with tick when x thing happened x ticks ago
-     */
+    private boolean onSlime, lastOnSlime,
+            onIce, lastOnIce,
+            inWeb, lastInWeb,
+            inWater, lastInWater,
+            inLava, lastInLava,
+            onClimbable, lastOnClimbable,
+            onStairs, lastOnStairs,
+            onSlabs, lastOnSlabs,
+            onSoulSand, lastOnSoulSand,
+            bonking, lastBonking,
+            sideHoney, lastSideHoney,
+            onHoney, lastOnHoney,
+            nearWall, lastNearWall;
 
-
-    private boolean slime, lastSlime,
-            ice, lastIce,
-            web, lastWeb,
-            water, lastWater,
-            lava, lastLava,
-            liquid, lastLiquid,
-            climbable, lastClimbable,
-            stairs, lastStairs,
-            slabs, lastSlabs,
-            piston, lastPiston;
-
-    private boolean clientGround, lastClientGround;
-    private boolean mathGround, lastMathGround;
+    private AxisAlignedBB sideBB, verticalBB;
 
     public CollisionProcessor(PlayerData data) {
         super(data);
@@ -39,44 +39,67 @@ public class CollisionProcessor extends Processor {
 
     @Override
     public void handlePre(PacketReceiveEvent event) {
-        if (WrapperPlayClientPlayerFlying.isFlying(event.getPacketType())) {
-            final WrapperPlayClientPlayerFlying wrapper = new WrapperPlayClientPlayerFlying(event);
-            final Location location = wrapper.getLocation();
-            final AxisAlignedBB boundingBox = new AxisAlignedBB(location.getX(), location.getY(), location.getZ());
+        if (PacketUtil.isFlying(event.getPacketType())) {
+            actualize();
 
-            final List<FrenchBlock> blocks = boundingBox.getBlocks(data);
+            if (PacketUtil.isPosition(event.getPacketType())) {
+                sideBB = PlayerUtil.getBoundingBox(data.getPositionProcessor().getX(),
+                        data.getPositionProcessor().getY(), data.getPositionProcessor().getZ()).expand(0.001, 0, 0.001);
 
-            this.actualize();
+                verticalBB = PlayerUtil.getBoundingBox(data.getPositionProcessor().getX(),
+                        data.getPositionProcessor().getY(), data.getPositionProcessor().getZ()).expand(0, 0.001, 0);
 
-            slime = blocks.stream().anyMatch(block -> block.getType().toString().contains("SLIME"));
-            ice = blocks.stream().anyMatch(block -> block.getType().toString().contains("ICE"));
-            web = blocks.stream().anyMatch(block -> block.getType().toString().contains("WEB"));
-            clientGround = wrapper.isOnGround();
-            water = blocks.stream().anyMatch(block -> block.getType().name().contains("WATER"));
-            lava = blocks.stream().anyMatch(block -> block.getType().name().contains("LAVA"));
-            liquid = water || lava;
-            climbable = blocks.stream().anyMatch(block -> block.getType().toString().contains("LADDER")
-                    || block.getType().toString().contains("VINE"));
-            stairs = blocks.stream().anyMatch(block -> block.getType().toString().contains("STAIR"));
-            slabs = blocks.stream().anyMatch(block -> block.getType().toString().contains("SLAB"));
-            piston = blocks.stream().anyMatch(block -> block.getType().toString().contains("PISTON"));
-            mathGround = (location.getY() % 0.015625) <= 0.0001;
+                int floorX = NumberConversions.floor(data.getPositionProcessor().getX());
+                int floorY = NumberConversions.floor(data.getPositionProcessor().getY());
+                int floorZ = NumberConversions.floor(data.getPositionProcessor().getZ());
+                int floorYHead = NumberConversions.floor(data.getPositionProcessor().getY() + 1.8F);
 
+                List<WrappedBlock> sideBlocks = sideBB.getBlocks(data);
+                List<WrappedBlock> verticalBlocks = verticalBB.getBlocks(data);
+
+                bonking = verticalBlocks.stream().anyMatch(block -> block.getY() > floorY);
+                onSlime = verticalBlocks.stream().anyMatch(block -> block.getType() == StateTypes.SLIME_BLOCK
+                        && block.getX() == floorX && block.getY() == floorY - 1 && block.getZ() == floorZ);
+                onSoulSand = verticalBlocks.stream().anyMatch(block -> block.getType() == StateTypes.SOUL_SAND
+                        && block.getX() == floorX && block.getY() == floorY && block.getZ() == floorZ);
+                onSlabs = verticalBlocks.stream().anyMatch(block -> BlockTags.SLABS.contains(block.getType())
+                        && block.getY() == floorY);
+                onIce = verticalBlocks.stream().anyMatch(block -> BlockTags.ICE.contains(block.getType())
+                        && block.getX() == floorX && block.getY() == floorY - 1 && block.getZ() == floorZ);
+                onStairs = verticalBlocks.stream().anyMatch(block -> BlockTags.SLABS.contains(block.getType())
+                        && block.getY() == floorY);
+                inWeb = verticalBlocks.stream().anyMatch(block -> block.getType() == StateTypes.COBWEB
+                        && block.getY() >= floorY && block.getY() <= floorYHead);
+
+                // TODO: make sure honey is 1 block tall and is not for all bb
+                onHoney = verticalBlocks.stream().anyMatch(block -> block.getType() == StateTypes.HONEY_BLOCK
+                        && block.getX() == floorX && block.getY() == floorY - 1 && block.getZ() == floorZ);
+
+                nearWall = !sideBlocks.isEmpty();
+                sideHoney = sideBlocks.stream().anyMatch(block -> block.getType() == StateTypes.HONEY_BLOCK);
+
+                onClimbable = BlockTags.CLIMBABLE.contains(data.getWorldProcessor()
+                        .getBlock(floorX, floorY, floorZ).getType());
+
+                inWater = PlayerUtil.isInWater(data);
+                inLava = PlayerUtil.isInLava(data);
+            }
         }
     }
 
     private void actualize() {
-        this.lastClientGround = this.clientGround;
-        this.lastMathGround = this.mathGround;
-        this.lastSlime = slime;
-        this.lastIce = ice;
-        this.lastWeb = web;
-        this.lastWater = water;
-        this.lastLava = lava;
-        this.lastLiquid = liquid;
-        this.lastClimbable = climbable;
-        this.lastStairs = stairs;
-        this.lastSlabs = slabs;
-        this.lastPiston = piston;
+        lastOnSlime = onSlime;
+        lastOnIce = onIce;
+        lastInWeb = inWeb;
+        lastInWater = inWater;
+        lastInLava = inLava;
+        lastOnClimbable = onClimbable;
+        lastOnStairs = onStairs;
+        lastOnSlabs = onSlabs;
+        lastOnSoulSand = onSoulSand;
+        lastBonking = bonking;
+        lastSideHoney = sideHoney;
+        lastOnHoney = onHoney;
+        lastNearWall = nearWall;
     }
 }

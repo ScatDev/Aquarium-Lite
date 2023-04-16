@@ -6,6 +6,8 @@ import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientPl
 import dev.scat.aquarium.data.PlayerData;
 import dev.scat.aquarium.data.processor.Processor;
 import dev.scat.aquarium.util.PacketUtil;
+import dev.scat.aquarium.util.PlayerUtil;
+import dev.scat.aquarium.util.mc.AxisAlignedBB;
 import lombok.Getter;
 
 @Getter
@@ -15,7 +17,7 @@ public class PositionProcessor extends Processor {
             deltaX, deltaY, deltaZ, deltaXZ,
             lastDeltaX, lastDeltaY, lastDeltaZ, lastDeltaXZ;
 
-    private boolean sentPosition;
+    private int ticksSincePosition;
 
     public PositionProcessor(PlayerData data) {
         super(data);
@@ -24,7 +26,7 @@ public class PositionProcessor extends Processor {
     @Override
     public void handlePre(PacketReceiveEvent event) {
         if (PacketUtil.isFlying(event.getPacketType())) {
-            sentPosition = false;
+            WrapperPlayClientPlayerFlying flying = new WrapperPlayClientPlayerFlying(event);
 
             lastX = x;
             lastY = y;
@@ -34,9 +36,9 @@ public class PositionProcessor extends Processor {
             lastDeltaZ = deltaZ;
             lastDeltaXZ = deltaXZ;
 
-            if (PacketUtil.isPosition(event.getPacketType())) {
-                WrapperPlayClientPlayerFlying flying = new WrapperPlayClientPlayerFlying(event);
+            ++ticksSincePosition;
 
+            if (flying.hasPositionChanged()) {
                 x = flying.getLocation().getX();
                 y = flying.getLocation().getY();
                 z = flying.getLocation().getZ();
@@ -47,7 +49,7 @@ public class PositionProcessor extends Processor {
 
                 deltaXZ = Math.hypot(deltaX, deltaZ);
 
-                sentPosition = true;
+                ticksSincePosition = 0;
             }
         }
     }
