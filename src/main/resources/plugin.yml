@@ -3,3 +3,7 @@ descripion: anticheat
 main: dev.scat.aquarium.Aquarium
 authors: [Scat]
 version: 1.0
+
+commands:
+  alerts:
+    description: Toggles alerts.

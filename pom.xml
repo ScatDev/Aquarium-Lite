@@ -103,5 +103,11 @@
             <artifactId>pledge</artifactId>
             <version>2.2</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.mongodb</groupId>
+            <artifactId>mongodb-driver-sync</artifactId>
+            <version>4.9.0</version>
+        </dependency>
     </dependencies>
 </project>

@@ -15,11 +15,7 @@ public class PacketEventsOutListener extends PacketListenerAbstract {
 
     @Override
     public void onPacketSend(PacketSendEvent event) {
-        Player player = (Player) event.getPlayer();
-
-        if (player == null) return;
-
-        PlayerData data = Aquarium.getInstance().getPlayerDataManager().get(player);
+        PlayerData data = Aquarium.getInstance().getPlayerDataManager().get(event.getUser().getUUID());
 
         if (data == null) return;
 

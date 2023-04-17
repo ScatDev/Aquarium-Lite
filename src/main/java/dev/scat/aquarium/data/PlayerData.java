@@ -4,8 +4,10 @@ import com.github.retrooper.packetevents.PacketEvents;
 import com.github.retrooper.packetevents.event.PacketReceiveEvent;
 import com.github.retrooper.packetevents.event.PacketSendEvent;
 import com.github.retrooper.packetevents.protocol.player.ClientVersion;
+import com.github.retrooper.packetevents.protocol.player.User;
 import dev.scat.aquarium.Aquarium;
 import dev.scat.aquarium.check.Check;
+import dev.scat.aquarium.config.Config;
 import dev.scat.aquarium.data.processor.impl.*;
 import dev.scat.aquarium.data.processor.Processor;
 import dev.scat.aquarium.util.PacketUtil;
@@ -13,8 +15,11 @@ import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.entity.Player;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Getter
 public class PlayerData {
@@ -36,6 +41,8 @@ public class PlayerData {
 
     private int tick;
 
+    private File logsFile;
+
     @Setter
     private boolean alerting, punishing;
 
@@ -52,11 +59,22 @@ public class PlayerData {
         processors.add(potionProcessor);
         processors.add(abilitiesProcessor);
 
-        if (player.hasPermission("aquarium.alerts")) {
-            alerting = true;
-        }
+        checks = Aquarium.getInstance().getCheckManager().loadChecks(this);
 
-        this.checks = Aquarium.getInstance().getCheckManager().loadChecks(this);
+        alerting = player.hasPermission("aquarium.alerts");
+
+        if (Config.DATABASE_TYPE.getValue().toString().equalsIgnoreCase("flat-file")) {
+            logsFile = new File(Aquarium.getInstance().getDataFolder(), "logs/" + player.getUniqueId());
+
+            if (logsFile.exists()) {
+                try {
+                    logsFile.mkdirs();
+                    logsFile.createNewFile();
+                } catch (IOException exception) {
+                    exception.printStackTrace();
+                }
+            }
+        }
     }
 
     public void handle(PacketReceiveEvent event) {
