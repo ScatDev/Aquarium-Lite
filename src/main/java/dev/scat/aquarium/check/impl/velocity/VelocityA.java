@@ -11,7 +11,6 @@ import dev.scat.aquarium.data.processor.impl.CollisionProcessor;
 import dev.scat.aquarium.data.processor.impl.PositionProcessor;
 import dev.scat.aquarium.data.processor.impl.VelocityProcessor;
 import dev.scat.aquarium.util.PacketUtil;
-import org.bukkit.Bukkit;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -58,7 +57,7 @@ public class VelocityA extends Check {
 
         final double jumpMotion = 0.42F + (data.getPotionProcessor().getAmplifier(PotionTypes.JUMP_BOOST) * 0.1F);
 
-        if(Math.abs(delta - jumpMotion) < 0.03 || Math.abs(delta) < min || velocities.stream().anyMatch(velocity -> Math.abs(velocity) < min)) {
+        if (Math.abs(delta - jumpMotion) < 0.03 || Math.abs(delta) < min || velocities.stream().anyMatch(velocity -> Math.abs(velocity) < min)) {
             buffer *= 0.75D;
             return;
         }
@@ -66,9 +65,9 @@ public class VelocityA extends Check {
         final double offset = velocities.stream().mapToDouble(velocity -> {
             double diff = Math.abs(velocity - delta);
 
-            if(diff > 1E-6) {
+            if (diff > 1E-6) {
                 double fixedVelocity = (velocity - 0.08) * 0.98F;
-                if(Math.abs(fixedVelocity - delta) < diff) {
+                if (Math.abs(fixedVelocity - delta) < diff) {
                     diff = Math.abs(fixedVelocity - delta);
                 }
             }
@@ -77,13 +76,10 @@ public class VelocityA extends Check {
 
         }).min().orElse(0);
 
-        if(offset > 1E-10) {
-            flag("offset=" + offset);
-        }
-
-
-
-
+        if (offset > 1E-10) {
+            if (++buffer > 1)
+                flag("offset=" + offset);
+        } else buffer = Math.max(0, buffer - 1E-4);
 
 
     }
