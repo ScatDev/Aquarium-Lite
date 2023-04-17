@@ -17,7 +17,7 @@ public class FlatFileImpl {
         PlayerData data = Aquarium.getInstance().getPlayerDataManager().get(log.getUuid());
 
         try {
-            FileWriter fileWriter = new FileWriter(data.getLogsFile(), false);
+            FileWriter fileWriter = new FileWriter(data.getLogsFile(), true);
             BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
 
             bufferedWriter.write(log.toString());
@@ -28,8 +28,6 @@ public class FlatFileImpl {
         } catch (IOException exception) {
             exception.printStackTrace();
         }
-
-        long end = System.currentTimeMillis();
     }
 
     public List<Log> getLogs(UUID uuid) {

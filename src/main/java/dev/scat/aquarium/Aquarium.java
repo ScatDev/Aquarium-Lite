@@ -1,7 +1,6 @@
 package dev.scat.aquarium;
 
 import com.github.retrooper.packetevents.PacketEvents;
-//import dev.scat.aquarium.command.AlertsCommand;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import dev.scat.aquarium.command.AlertsCommand;
 import dev.scat.aquarium.config.CheckConfig;
@@ -19,6 +18,7 @@ import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.File;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 

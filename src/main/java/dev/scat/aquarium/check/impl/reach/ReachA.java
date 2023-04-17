@@ -81,10 +81,9 @@ public class ReachA extends Check {
                 }
             }
 
-            final double maxDistance = data.getAbilitiesProcessor().getAbilities().isCreativeMode() ? 4.501D : 3.01D;
 
             // This will false on a lot of stuff
-            if (distance > maxDistance) {
+            if (distance > 3.01) {
                 flag((distance == 10 ? "tried to attack oustide of the hitbox" : "reach=" + distance));
             }
         }
