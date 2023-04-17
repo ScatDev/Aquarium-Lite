@@ -8,9 +8,12 @@ import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerEn
 import dev.scat.aquarium.data.PlayerData;
 import dev.scat.aquarium.data.processor.Processor;
 import dev.scat.aquarium.util.PacketUtil;
+import lombok.Getter;
 
 import java.util.ArrayDeque;
 
+
+@Getter
 public class VelocityProcessor extends Processor {
 
     private final ArrayDeque<Vector3d> velocities = new ArrayDeque<>();
@@ -34,8 +37,6 @@ public class VelocityProcessor extends Processor {
 
         if (wrapper.getEntityId() != data.getPlayer().getEntityId()) return;
 
-        final Vector3d vel = wrapper.getVelocity();
-
         data.getPledgeProcessor().confirmPre(() -> velocities.add(wrapper.getVelocity()));
         data.getPledgeProcessor().confirmPost(() -> {
             if (velocities.size() > 1)
@@ -43,4 +44,10 @@ public class VelocityProcessor extends Processor {
         });
 
     }
+
+    public boolean isTakingVelocity() {
+        return !velocities.isEmpty();
+    }
+
+
 }
