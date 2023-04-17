@@ -14,3 +14,8 @@ checks:
       enabled: true
       punishable: false
       max-vl: 20
+  velocity:
+    a:
+      enabled: true
+      punishable: false
+      max-vl: 20

@@ -35,6 +35,7 @@ public class PlayerData {
     private final CollisionProcessor collisionProcessor = new CollisionProcessor(this);
     private final AbilitiesProcessor abilitiesProcessor = new AbilitiesProcessor(this);
     private final PotionProcessor potionProcessor = new PotionProcessor(this);
+    private final VelocityProcessor velocityProcessor = new VelocityProcessor(this);
     
     private final List<Check> checks;
 
@@ -57,6 +58,7 @@ public class PlayerData {
         processors.add(collisionProcessor);
         processors.add(potionProcessor);
         processors.add(abilitiesProcessor);
+        processors.add(velocityProcessor);
 
         checks = Aquarium.getInstance().getCheckManager().loadChecks(this);
 
