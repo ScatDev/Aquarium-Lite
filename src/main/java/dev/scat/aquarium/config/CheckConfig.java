@@ -18,6 +18,7 @@ public class CheckConfig {
             return (boolean) config.get(path);
         } else {
             config.set(path, true);
+            Aquarium.getInstance().saveConfig();
 
             return true;
         }
@@ -30,6 +31,7 @@ public class CheckConfig {
             return (boolean) config.get(path);
         } else {
             config.set(path, true);
+            Aquarium.getInstance().saveConfig();
 
             return true;
         }
@@ -42,17 +44,19 @@ public class CheckConfig {
             return (int) config.get(path);
         } else {
             config.set(path, 25);
+            Aquarium.getInstance().saveConfig();
 
             return 25;
         }
     }
 
     public String getPunishCommand(String type, String name) {
-        String path = "checks." + type.toLowerCase() + "." + name.toLowerCase() + ".max-vl";
+        String path = "checks." + type.toLowerCase() + "." + name.toLowerCase() + ".punish-command";
 
         if (config.contains(path)) {
             return config.getString(path);
         } else {
+
             return Config.PUNISH_COMMAND.translate();
         }
     }

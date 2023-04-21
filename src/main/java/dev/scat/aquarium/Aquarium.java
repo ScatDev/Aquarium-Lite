@@ -18,7 +18,9 @@ import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.io.File;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.URL;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -57,6 +59,8 @@ public class Aquarium extends JavaPlugin {
         saveDefaultConfig();
         checkConfig.setup();
 
+        databaseManager.setup();
+
         pledge = Pledge.build().start(this);
 
         PacketEvents.getAPI().init();
@@ -73,6 +77,12 @@ public class Aquarium extends JavaPlugin {
 
         Bukkit.getScheduler().runTaskTimer(this, () -> {
             ++tick;
+
+            try {
+                databaseManager.run();
+            } catch (Exception exception) {
+                exception.printStackTrace();
+            }
 
             if (tick % ((int) Config.VL_RESET_DELAY.getValue() * 20) == 0) {
                 playerDataManager.getValues().forEach(data

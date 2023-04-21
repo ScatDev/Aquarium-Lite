@@ -41,7 +41,6 @@ public abstract class Check {
     public void handle(PacketSendEvent event) {}
 
     public void flag(String info) {
-        Aquarium.getInstance().getExecutorService().execute(() -> {
             ++vl;
 
             TextComponent alert = new TextComponent();
@@ -79,6 +78,7 @@ public abstract class Check {
             Aquarium.getInstance().getDatabaseManager().addLog(
                     new Log(data.getPlayer().getUniqueId(),
                             System.currentTimeMillis(),
+                            data.getPlayer().getName(),
                             type + " (" + name + ")", info, vl));
 
             if (vl >= maxVl && punish && !data.isPunishing()
@@ -92,8 +92,8 @@ public abstract class Check {
                 Aquarium.getInstance().getDatabaseManager().addLog(
                         new Log(data.getPlayer().getUniqueId(),
                                 System.currentTimeMillis(),
+                                data.getPlayer().getName(),
                                 type + " (" + name + ")", "Punished", vl));
             }
-        });
     }
 }

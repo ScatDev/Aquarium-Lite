@@ -65,10 +65,8 @@ public class PlayerData {
         alerting = player.hasPermission("aquarium.alerts");
 
         if (Config.DATABASE_TYPE.getValue().toString().equalsIgnoreCase("flat-file")) {
-            logsFile = new File(Aquarium.getInstance().getDataFolder() + "\\logs\\" +
-                    player.getUniqueId().toString() + ".txt");
-
-            Bukkit.broadcastMessage(logsFile.isFile() + "");
+            logsFile = new File(Aquarium.getInstance().getDataFolder() + File.separator + "logs"
+                    + File.separator + player.getUniqueId().toString() + ".txt");
 
             try {
                 logsFile.getParentFile().mkdir();
