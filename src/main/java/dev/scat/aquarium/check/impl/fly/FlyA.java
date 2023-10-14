@@ -49,27 +49,6 @@ public class FlyA extends Check {
             {
                 for (double motionY : lastDeltaYs) {
                     for (int i = 0; i <= maxTicks; i++) {
-//                        if (i == 0 && motionY != lastDeltaY) {
-//                            if (Math.abs(motionY) < 0.005) motionY = 0;
-//
-//                            double offset = Math.abs(motionY - deltaY);
-//
-//                            if (offset < lowestOffset) {
-//                                lowestOffset = offset;
-//                                closestDeltaY = motionY;
-//
-//                                if (bonking && deltaY < motionY) {
-//                                    found = true;
-//                                    break prediction;
-//                                } else if (offset < 1E-8) {
-//                                    found = true;
-//                                    break prediction;
-//                                }
-//                            }
-//
-//                            continue;
-//                        }
-
                         if (i == 0 && lastBonking && deltaY < 0)
                             motionY = 0;
 

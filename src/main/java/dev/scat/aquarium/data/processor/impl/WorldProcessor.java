@@ -151,7 +151,14 @@ public class WorldProcessor extends Processor {
                 if (length <= (pos.getY() >> 4))
                     return;
 
-                // npe
+                BaseChunk chunk = chunks.get(xz)[pos.getY() >> 4];
+
+                if (chunk == null) {
+                    chunk = create();
+                    chunk.set(0, 0, 0, 0);
+                    chunks.get(xz)[pos.getY() >> 4] = chunk;
+                }
+
                 chunks.get(xz)[pos.getY() >> 4].set(pos.getX() & 15, pos.getY() & 15, pos.getZ() & 15,
                         blockPlace.getItemStack().get().getType().getPlacedType()
                                 .createBlockState(data.getVersion()).getGlobalId());

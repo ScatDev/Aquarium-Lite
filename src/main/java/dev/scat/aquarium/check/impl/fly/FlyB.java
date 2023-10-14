@@ -52,8 +52,9 @@ public class FlyB extends Check {
                     || data.getAbilitiesProcessor().getLastAbilities().isFlightAllowed()
                     || data.getAbilitiesProcessor().getLastAbilities().isFlying()
                     || data.getCollisionProcessor().isNearPiston()
-                    || data.getCollisionProcessor().isLastOnClimbable()
-                    || data.getPositionProcessor().getTicksSinceTeleport() < 3;
+                    || data.getCollisionProcessor().isLastLastOnClimbable()
+                    || data.getPositionProcessor().getTicksSinceTeleport() < 3
+                    || data.getTick() < 150;
 
             if (!valid && exempt) {
                 if (++buffer > 1) {

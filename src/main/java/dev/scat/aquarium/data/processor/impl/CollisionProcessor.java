@@ -29,7 +29,7 @@ public class CollisionProcessor extends Processor {
             inWeb, lastInWeb,
             inWater, lastInWater, lastLastInWater,
             inLava, lastInLava, lastLastInLava,
-            onClimbable, lastOnClimbable,
+            onClimbable, lastOnClimbable, lastLastOnClimbable,
             onStairs, lastOnStairs,
             onSlabs, lastOnSlabs,
             onSoulSand, lastOnSoulSand,
@@ -146,6 +146,7 @@ public class CollisionProcessor extends Processor {
         lastInWater = inWater;
         lastLastInLava = lastInLava;
         lastInLava = inLava;
+        lastLastOnClimbable = lastOnClimbable;
         lastOnClimbable = onClimbable;
         lastOnStairs = onStairs;
         lastOnSlabs = onSlabs;
