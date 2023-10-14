@@ -56,7 +56,7 @@ public class FlyB extends Check {
                     || data.getPositionProcessor().getTicksSinceTeleport() < 3
                     || data.getTick() < 150;
 
-            if (!valid && exempt) {
+            if (!valid && !exempt) {
                 if (++buffer > 1) {
                     flag("dy=" + deltaY);
 
