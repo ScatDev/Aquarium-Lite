@@ -13,10 +13,8 @@ import java.util.UUID;
 public class Log {
     private final UUID uuid;
     private final long time;
-    private final String name;
-    private final String action;
-    private final String info;
-    private final int vl;
+    private final String type, name, info;
+    private final double vl;
 
     public Log(UUID uuid, String string) {
         String[] split = string.split("//");
@@ -26,29 +24,29 @@ public class Log {
         }
 
         this.uuid = uuid;
-        name = split[1];
-        time = Long.parseLong(split[3]);
-        action = split[5];
+        time = Long.parseLong(split[1]);
+        type = split[3];
+        name = split[5];
         info = split[7];
-        vl = Integer.parseInt(split[9]);
+        vl = Double.parseDouble(split[9]);
     }
 
     public Log(Document doc) {
         uuid = doc.get("uuid", UUID.class);
-        name = doc.getString("name");
         time = doc.getLong("time");
-        action = doc.getString("action");
+        type = doc.getString("type");
+        name = doc.getString("name");
         info = doc.getString("info");
-        vl = doc.getInteger("vl");
+        vl = doc.getDouble("vl");
     }
     
     public Document toDocument() {
         Document doc = new Document();
 
-        doc.put("uuid", uuid.toString());
-        doc.put("name", name);
+        doc.put("uuid", uuid);
         doc.put("time", time);
-        doc.put("action", action);
+        doc.put("type", type);
+        doc.put("name", name);
         doc.put("info", info);
         doc.put("vl", vl);
 
@@ -56,10 +54,7 @@ public class Log {
     }
 
     public String toString() {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(time);
-
-        return "Name//" + name + "//Time//" + calendar.getTime() + "//Action//" + action
+        return "Time//" + time + "//Type//" + type + "//Name//" + name
                 + "//Info//" + info + "//VL//" + vl;
     }
 }

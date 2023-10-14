@@ -5,7 +5,6 @@ import com.github.retrooper.packetevents.event.PacketReceiveEvent;
 import com.github.retrooper.packetevents.protocol.packettype.PacketType;
 import com.github.retrooper.packetevents.protocol.player.ClientVersion;
 import com.github.retrooper.packetevents.wrapper.PacketWrapper;
-import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientInteractEntity;
 import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientPong;
 import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientWindowConfirmation;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerPing;
@@ -15,10 +14,12 @@ import com.google.common.collect.Multimap;
 import dev.scat.aquarium.Aquarium;
 import dev.scat.aquarium.data.PlayerData;
 import dev.scat.aquarium.data.processor.Processor;
+import dev.scat.aquarium.util.PacketUtil;
 import dev.thomazz.pledge.api.PacketFrame;
 import dev.thomazz.pledge.api.event.PacketFrameReceiveEvent;
 import dev.thomazz.pledge.api.event.ReceiveType;
 import lombok.Getter;
+import org.bukkit.Bukkit;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -28,7 +29,8 @@ public class TransactionProcessor extends Processor {
 
     private final Multimap<Integer, Runnable> pledgeTasks = ArrayListMultimap.create();
     private final Map<Short, Runnable> transactionTasks = new HashMap<>();
-    private short transactionId = -1000;
+    private short transactionId = -17000;
+    private boolean responded;
 
     public TransactionProcessor(PlayerData data) {
         super(data);
@@ -45,11 +47,13 @@ public class TransactionProcessor extends Processor {
         } else if (event.getPacketType() == PacketType.Play.Client.PONG) {
             WrapperPlayClientPong pong = new WrapperPlayClientPong(event);
 
-            if (Math.abs(pong.getId()) > Short.MAX_VALUE && pong.getId() < 0) {
+            if (Math.abs(pong.getId()) > Short.MIN_VALUE && pong.getId() < 0) {
                 Runnable runnable = transactionTasks.remove((short) pong.getId());
 
                 if (runnable != null) runnable.run();
             }
+        } else if (PacketUtil.isFlying(event.getPacketType())) {
+            responded = false;
         }
     }
 
@@ -71,6 +75,8 @@ public class TransactionProcessor extends Processor {
                 }
             }
         }
+
+        responded = true;
     }
 
     public void confirmPre(Runnable runnable) {
@@ -93,13 +99,16 @@ public class TransactionProcessor extends Processor {
         } else {
             packet = new WrapperPlayServerWindowConfirmation(0, transactionId, false);
         }
-        
-        PacketEvents.getAPI().getPlayerManager().sendPacket(data.getPlayer(), packet);
 
+        // add before send cause on localhost it will respond before the task is added lmao
         transactionTasks.put(transactionId, runnable);
 
+        // TODO: fix possible tranny rape
+        PacketEvents.getAPI().getPlayerManager().sendPacket(data.getPlayer(), packet);
+
         transactionId--;
-        
-        if (transactionId < -2000) transactionId = -1000;
+
+        if (transactionId < -18000)
+            transactionId = -17000;
     }
 }

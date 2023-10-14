@@ -6,7 +6,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 public class CheckConfig {
 
     private FileConfiguration config;
-
+    
     public void setup() {
         config = Aquarium.getInstance().getConfig();
     }
@@ -37,16 +37,16 @@ public class CheckConfig {
         }
     }
 
-    public int getMaxVl(String type, String name) {
+    public double getMaxVl(String type, String name) {
         String path = "checks." + type.toLowerCase() + "." + name.toLowerCase() + ".max-vl";
 
         if (config.contains(path)) {
-            return (int) config.get(path);
+            return config.getDouble(path);
         } else {
-            config.set(path, 25);
+            config.set(path, 25D);
             Aquarium.getInstance().saveConfig();
 
-            return 25;
+            return 25D;
         }
     }
 

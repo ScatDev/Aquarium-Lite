@@ -10,6 +10,8 @@ public enum Config {
     PREFIX("prefix", "x"),
     ALERT_MESSAGE("alert-message", "&8[&cA&8] &c%player% &ffailed &c%type% &7(&c%name%&7) &fx%vl%"),
     HOVER_MESSAGE("hover-message", "%info%\n\n&cClick to teleport!"),
+    HOVER_MESSAGE_NOTE("hover-message-note","%note%\n\n%info%\n\n%cClick to teleport!"),
+    NOTIFY_MESSAGE("notify-message", "&8[&cA&8] &c%player% &f%message%"),
     BYPASS_PUNISHMENT("bypass-punishment", true),
     VL_RESET_DELAY("vl-reset-delay", 600),
     DATABASE_TYPE("database-type", "flat-file"),
@@ -20,7 +22,13 @@ public enum Config {
     PLAYER_ONLY_MESSAGE("player-only-message", "&cThis command is player only!"),
     NO_PERMISSION_MESSAGE("no-permission-message", "&cNo permission."),
     ALERTS_DISABLED_MESSAGE("alerts-disabled-message", "&cYou have disabled your anticheat alerts."),
-    ALERTS_ENABLED_MESSAGE("alerts-enabled-message", "&aYou have enabled your anticheat alerts.");
+    ALERTS_ENABLED_MESSAGE("alerts-enabled-message", "&aYou have enabled your anticheat alerts."),
+    LOGS_START_MESSAGE("logs-start-message", "&cShowing %player%'s logs &7(Page: %page%)"),
+    LOG_MESSAGE("log-message", "&7 - &c%player% &ffailed &c%type% &7(&c%name%&7) &fx%vl% (%time% ago)"),
+    NO_LOGS_MESSAGE("no-logs-message", "&c%player% has no logged violations."),
+    NO_LOGS_ON_PAGE("no-logs-on-page", "&c%player% has no logged violations on this page."),
+    PLAYER_HASNT_JOINED_MESSAGE("player-hasnt-joined-message", "&c'%player%' has not joined this server before."),
+    DELETED_LOGS_MESSAGE("deleted-logs-message", "&aSuccessfully deleted %player%'s logs.");
 
     private final String path;
     private final Object value;

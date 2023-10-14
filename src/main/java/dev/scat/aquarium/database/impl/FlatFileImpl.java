@@ -3,7 +3,6 @@ package dev.scat.aquarium.database.impl;
 import dev.scat.aquarium.Aquarium;
 import dev.scat.aquarium.data.PlayerData;
 import dev.scat.aquarium.database.Log;
-import org.bukkit.Bukkit;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -17,6 +16,9 @@ public class FlatFileImpl {
         PlayerData data = Aquarium.getInstance().getPlayerDataManager().get(log.getUuid());
 
         try {
+            if (data == null)
+                return;
+
             FileWriter fileWriter = new FileWriter(data.getLogsFile(), true);
             BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
 
@@ -33,10 +35,10 @@ public class FlatFileImpl {
     public List<Log> getLogs(UUID uuid) {
         List<Log> logs = new ArrayList<>();
 
-        PlayerData data = Aquarium.getInstance().getPlayerDataManager().get(uuid);
-
+        File logsFile = new File(Aquarium.getInstance().getDataFolder() + File.separator + "logs"
+                + File.separator + uuid.toString() + ".txt");
         try {
-            FileReader fileReader = new FileReader(data.getLogsFile());
+            FileReader fileReader = new FileReader(logsFile);
             BufferedReader bufferedReader = new BufferedReader(fileReader);
 
             bufferedReader.lines().collect(Collectors.toList()).stream()
@@ -51,5 +53,13 @@ public class FlatFileImpl {
         }
 
         return logs;
+    }
+
+    public void deleteLogs(UUID uuid) {
+        File logsFile = new File(Aquarium.getInstance().getDataFolder() + File.separator + "logs"
+                + File.separator + uuid.toString() + ".txt");
+
+        if (logsFile.exists())
+            logsFile.delete();
     }
 }

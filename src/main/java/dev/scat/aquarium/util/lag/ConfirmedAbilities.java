@@ -26,4 +26,8 @@ public class ConfirmedAbilities {
                 0.05F
         );
     }
+
+    public ConfirmedAbilities clone() {
+        return new ConfirmedAbilities(godMode, flying, flightAllowed, creativeMode, walkSpeed, flySpeed);
+    }
 }

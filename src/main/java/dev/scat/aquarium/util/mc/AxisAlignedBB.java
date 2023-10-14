@@ -1,15 +1,18 @@
 package dev.scat.aquarium.util.mc;
 
 import com.github.retrooper.packetevents.protocol.world.states.WrappedBlockState;
+import com.github.retrooper.packetevents.protocol.world.states.type.StateTypes;
 import dev.scat.aquarium.data.PlayerData;
+import dev.scat.aquarium.util.collision.CollisionBox;
+import dev.scat.aquarium.util.collision.CollisionData;
 import dev.scat.aquarium.util.collision.WrappedBlock;
+import lombok.Getter;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
 public class AxisAlignedBB {
     public double minX;
     public double minY;
@@ -39,16 +42,25 @@ public class AxisAlignedBB {
 
     public List<WrappedBlock> getBlocks(PlayerData data) {
         List<WrappedBlock> blocks = new ArrayList<>();
-        for (int x = MathHelper.floor_double(minX); x <= MathHelper.floor_double(maxX); x++) {
-            for (int y = MathHelper.floor_double(minY); y <= MathHelper.floor_double(maxY); y++) {
-                for (int z = MathHelper.floor_double(minZ); z <= MathHelper.floor_double(maxZ); z++) {
+
+        for (int x = MathHelper.floor_double(minX); x < MathHelper.floor_double(maxX) + 1; x++) {
+            for (int y = MathHelper.floor_double(minY); y < MathHelper.floor_double(maxY) + 1; y++) {
+                for (int z = MathHelper.floor_double(minZ); z < MathHelper.floor_double(maxZ) + 1; z++) {
                     WrappedBlockState block = data.getWorldProcessor().getBlock(x, y, z);
 
-                    if (!block.getType().isAir())
-                        blocks.add(new WrappedBlock(block.getType(), x, y, z));
+                    if (!block.getType().isSolid())
+                        continue;
+
+                    CollisionBox collisionBox = CollisionData.getData(block.getType())
+                            .getMovementCollisionBoxes(data, data.getVersion(), block, x, y, z);
+
+                    if (collisionBox.isCollided(this)) {
+                        blocks.add(new WrappedBlock(block, collisionBox, x, y, z));
+                    }
                 }
             }
         }
+
         return blocks;
     }
 
@@ -355,5 +367,9 @@ public class AxisAlignedBB {
 
     public boolean func_181656_b() {
         return Double.isNaN(this.minX) || Double.isNaN(this.minY) || Double.isNaN(this.minZ) || Double.isNaN(this.maxX) || Double.isNaN(this.maxY) || Double.isNaN(this.maxZ);
+    }
+
+    public AxisAlignedBB clone() {
+        return new AxisAlignedBB(minX, minY, minZ, maxX, maxY, maxZ);
     }
 }

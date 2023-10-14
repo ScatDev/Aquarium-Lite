@@ -4,35 +4,36 @@ import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
 import com.mongodb.ServerApi;
 import com.mongodb.ServerApiVersion;
-import com.mongodb.client.*;
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.Filters;
 import dev.scat.aquarium.Aquarium;
 import dev.scat.aquarium.config.Config;
 import dev.scat.aquarium.database.Log;
+import lombok.Getter;
 import org.bson.Document;
-import org.bukkit.Bukkit;
+import org.bson.UuidRepresentation;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class MongoImpl {
     
     private MongoClient mongoClient;
     private MongoDatabase mongoDatabase;
+
+    @Getter
     private MongoCollection<Document> logs;
 
     public MongoImpl() {
-        ServerApi serverApi = ServerApi.builder()
-                .version(ServerApiVersion.V1)
-                .build();
-
         MongoClientSettings settings = MongoClientSettings.builder()
                 .applyConnectionString(new ConnectionString((String) Config.MONGO_URI.getValue()))
-                .serverApi(serverApi)
+                .uuidRepresentation(UuidRepresentation.STANDARD)
                 .build();
 
         mongoClient = MongoClients.create(settings);
@@ -43,9 +44,44 @@ public class MongoImpl {
     }
 
     public void run() {
-        List<Document> documents = Aquarium.getInstance().getDatabaseManager().getPendingLogs()
-                .stream().map(Log::toDocument).collect(Collectors.toList());
+        Aquarium.getInstance().getDatabaseManager().setClearingLogs(true);
 
-        logs.insertMany(documents);
+        if (!Aquarium.getInstance().getDatabaseManager().getPendingLogs().isEmpty()) {
+            if (Aquarium.getInstance().getDatabaseManager().getPendingLogs().size() > 1) {
+                logs.insertMany(Aquarium.getInstance().getDatabaseManager().getPendingLogs()
+                        .stream().map(Log::toDocument)
+                        .collect(Collectors.toList()));
+            } else {
+                logs.insertOne(Aquarium.getInstance().getDatabaseManager().getPendingLogs()
+                        .stream().findFirst().get().toDocument());
+            }
+
+            Aquarium.getInstance().getDatabaseManager().getPendingLogs().clear();
+        }
+
+        Aquarium.getInstance().getDatabaseManager().setClearingLogs(false);
+
+        Iterator<Log> iterator = Aquarium.getInstance().getDatabaseManager().getTemporaryLogs().iterator();
+
+        while (iterator.hasNext()) {
+            Log log = iterator.next();
+
+            iterator.remove();
+
+            Aquarium.getInstance().getDatabaseManager().getPendingLogs().add(log);
+        }
+    }
+
+    public List<Log> getLogs(UUID uuid) {
+        List<Log> logsList = new ArrayList<>();
+
+        logs.find(Filters.eq("uuid", uuid))
+                .forEach(doc -> logsList.add(new Log(doc)));
+
+        return logsList;
+    }
+
+    public void deleteLogs(UUID uuid) {
+        logs.deleteMany(Filters.eq("uuid", uuid));
     }
 }

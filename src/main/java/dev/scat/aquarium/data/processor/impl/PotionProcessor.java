@@ -4,6 +4,7 @@ import com.github.retrooper.packetevents.event.PacketSendEvent;
 import com.github.retrooper.packetevents.protocol.packettype.PacketType;
 import com.github.retrooper.packetevents.protocol.potion.PotionType;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerEntityEffect;
+import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerRemoveEntityEffect;
 import dev.scat.aquarium.data.PlayerData;
 import dev.scat.aquarium.data.processor.Processor;
 
@@ -25,27 +26,29 @@ public class PotionProcessor extends Processor {
     @Override
     public void handlePre(PacketSendEvent event) {
         if(event.getPacketType() == PacketType.Play.Server.ENTITY_EFFECT) {
-            final WrapperPlayServerEntityEffect wrapper = new WrapperPlayServerEntityEffect(event);
+            WrapperPlayServerEntityEffect wrapper = new WrapperPlayServerEntityEffect(event);
 
-            if(wrapper.getEntityId() != data.getPlayer().getEntityId()) return;
+            if (wrapper.getEntityId() != data.getPlayer().getEntityId()) return;
 
-            data.getPledgeProcessor().confirmPost(() -> potionMap.putIfAbsent(wrapper.getPotionType(), wrapper.getEffectAmplifier() + 1));
-
+            data.getTransactionProcessor().confirmPre(() ->
+                potionMap.put(wrapper.getPotionType(), wrapper.getEffectAmplifier())
+            );
         } else if(event.getPacketType() == PacketType.Play.Server.REMOVE_ENTITY_EFFECT) {
-            final WrapperPlayServerEntityEffect wrapper = new WrapperPlayServerEntityEffect(event);
+            WrapperPlayServerRemoveEntityEffect wrapper = new WrapperPlayServerRemoveEntityEffect(event);
 
-            if(wrapper.getEntityId() != data.getPlayer().getEntityId()) return;
+            if (wrapper.getEntityId() != data.getPlayer().getEntityId()) return;
 
-            data.getPledgeProcessor().confirmPost(() -> potionMap.remove(wrapper.getPotionType()));
+            data.getTransactionProcessor().confirmPost(()
+                    -> potionMap.remove(wrapper.getPotionType()));
         }
 
     }
 
-    public int getAmplifier(final PotionType type) {
-       return potionMap.getOrDefault(type, 0);
+    public int getAmplifier(PotionType type) {
+       return potionMap.getOrDefault(type, -1);
     }
 
-    public boolean hasEffect(final PotionType type) {
-        return getAmplifier(type) != 0;
+    public boolean hasEffect(PotionType type) {
+        return potionMap.containsKey(type);
     }
 }

@@ -13,11 +13,6 @@ public class PledgeListener implements Listener {
     public void onReceive(PacketFrameReceiveEvent event) {
         PlayerData data = Aquarium.getInstance().getPlayerDataManager().get(event.getPlayer().getUniqueId());
 
-        data.getPledgeProcessor().handle(event);
-    }
-
-    @EventHandler
-    public void onSend(PacketFrameSendEvent event) {
-        PlayerData data = Aquarium.getInstance().getPlayerDataManager().get(event.getPlayer().getUniqueId());
+        data.handle(event);
     }
 }

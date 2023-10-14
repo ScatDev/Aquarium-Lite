@@ -1,9 +1,17 @@
 name: Aquarium
 descripion: anticheat
 main: dev.scat.aquarium.Aquarium
-authors: [Scat]
+authors: [Scat/ExDiggers, Salers]
 version: 1.0
+softdepend: [ViaVersion, ProtocolSupport]
 
 commands:
   alerts:
     description: Toggles alerts.
+  logs:
+    description: Shows logs of a player.
+  deletelogs:
+    description: Deletes logs of a player.
+  aqdebug:
+    description: Runs check debugs;
+

@@ -410,6 +410,13 @@ public class MathHelper
         return i;
     }
 
+
+    public static long getCoordinateRandomModern(int x, int y, int z) {
+        long i = (long)(x * 3129871) ^ (long)z * 116129781L ^ (long)y;
+        i = i * i * 42317861L + i * 11L;
+        return i >> 16;
+    }
+
     public static UUID getRandomUuid(Random rand)
     {
         long i = rand.nextLong() & -61441L | 16384L;

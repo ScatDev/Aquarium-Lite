@@ -22,6 +22,7 @@ public class AlertsCommand implements CommandExecutor {
 
         if (!sender.hasPermission("aquarium.alerts")) {
             sender.sendMessage(Config.NO_PERMISSION_MESSAGE.translate());
+            return false;
         }
 
         if (args.length != 0) {
@@ -34,10 +35,12 @@ public class AlertsCommand implements CommandExecutor {
 
         if (data.isAlerting()) {
             data.setAlerting(false);
+            Aquarium.getInstance().getPlayerDataManager().getAlertingPlayers().remove(data.getPlayer());
 
             sender.sendMessage(Config.ALERTS_DISABLED_MESSAGE.translate());
         } else {
             data.setAlerting(true);
+            Aquarium.getInstance().getPlayerDataManager().getAlertingPlayers().add(data.getPlayer());
 
             sender.sendMessage(Config.ALERTS_ENABLED_MESSAGE.translate());
         }
