@@ -24,7 +24,7 @@ public class GroundSpoofA extends Check {
             boolean invalid = clientGround && !serverGround;
 
             boolean exempt = data.getVehicleProcessor().isInVehicle()
-                    || data.getPositionProcessor().getTicksSinceTeleport() <= 2
+                    || data.getPositionProcessor().getTicksSinceTeleport() == 0
                     || data.getAbilitiesProcessor().getLastAbilities().isFlightAllowed()
                     || data.getAbilitiesProcessor().getLastAbilities().isFlying();
 

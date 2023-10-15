@@ -13,7 +13,9 @@ import dev.scat.aquarium.data.processor.impl.*;
 import dev.scat.aquarium.database.Log;
 import dev.scat.aquarium.util.ColorUtil;
 import dev.scat.aquarium.util.PacketUtil;
+import dev.thomazz.pledge.api.event.PacketFrameErrorEvent;
 import dev.thomazz.pledge.api.event.PacketFrameReceiveEvent;
+import dev.thomazz.pledge.api.event.PacketFrameTimeoutEvent;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Bukkit;
@@ -63,6 +65,12 @@ public class PlayerData {
 
         user = PacketEvents.getAPI().getPlayerManager().getUser(player);
         version = PacketEvents.getAPI().getPlayerManager().getClientVersion(player);
+
+        if (version.isNewerThanOrEquals(ClientVersion.V_1_9)) {
+            Bukkit.getScheduler().runTask(Aquarium.getInstance(),
+                    () -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(),
+                            "kick " + player.getName() + " " + Config.MODERN_VERSION_MESSAGE));
+        }
 
         // Do this so processors can use user and version on init
         positionProcessor = new PositionProcessor(this);
@@ -139,6 +147,14 @@ public class PlayerData {
         checks.stream().filter(Check::isEnabled).forEach(check -> check.handle(event));
 
         processors.forEach(processor -> processor.handlePost(event));
+    }
+
+    public void handle(PacketFrameErrorEvent event) {
+        transactionProcessor.handle(event);
+    }
+
+    public void handle(PacketFrameTimeoutEvent event) {
+        transactionProcessor.handle(event);
     }
 
     public void notify(String input) {

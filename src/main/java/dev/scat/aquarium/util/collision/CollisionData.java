@@ -224,7 +224,6 @@ public enum CollisionData {
         float f2 = 0.375F;
         float f3 = 0.625F;
 
-
         CompositeCollisionBox collisionBox = new CompositeCollisionBox();
 
         if (north) {
@@ -525,7 +524,7 @@ public enum CollisionData {
             f3 = 0.6875F;
         }
 
-        return new SimpleCollisionBox(f, 0.0F, f2, f1, f4, f3);
+        return new SimpleCollisionBox(f, 0.0F, f2, f1, 1.5D, f3);
     }, BlockTags.WALLS.getStates().toArray(new StateType[0])),
 
     NONE(new SimpleCollisionBox(0, 0, 0, 0, 0, 0), StateTypes.AIR, StateTypes.LIGHT);

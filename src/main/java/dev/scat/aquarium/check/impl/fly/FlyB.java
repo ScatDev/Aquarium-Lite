@@ -9,7 +9,7 @@ import dev.scat.aquarium.util.PacketUtil;
 public class FlyB extends Check {
 
     public FlyB(PlayerData data) {
-        super(data, "Fly", "B");
+        super(data, "Fly", "B", true);
     }
 
     @Override

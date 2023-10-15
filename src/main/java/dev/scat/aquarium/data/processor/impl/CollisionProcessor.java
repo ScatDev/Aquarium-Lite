@@ -13,6 +13,7 @@ import dev.scat.aquarium.util.collision.WrappedBlock;
 import dev.scat.aquarium.util.mc.AxisAlignedBB;
 import dev.scat.aquarium.util.mc.MathHelper;
 import lombok.Getter;
+import org.bukkit.Bukkit;
 import org.bukkit.util.NumberConversions;
 
 import java.util.List;
@@ -79,7 +80,8 @@ public class CollisionProcessor extends Processor {
                 int floorYHead = MathHelper.floor_double(data.getPositionProcessor().getY() + 1.8F);
 
                 // fuck it we using bad values cause thats all we can
-                blocks = bb.getBlocks(data);
+                // look one block lower for fences and shit
+                blocks = bb.expand(0, 0, 1, 0, 0, 0).getBlocks(data);
 
                 bonking = blocks.stream().anyMatch(block -> block.getY() >= floorYHead
                         && block.getCollisionBox().isCollided(bb.expand(-0.001, 0, -0.001)));

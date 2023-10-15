@@ -31,8 +31,7 @@ public class SetbackProcessor extends Processor {
 
     @Override
     public void handlePost(PacketReceiveEvent event) {
-        // Should this be on flying? idk
-        if (PacketUtil.isFlying(event.getPacketType())) {
+        if (PacketUtil.isPosition(event.getPacketType())) {
             WrapperPlayClientPlayerFlying flying = new WrapperPlayClientPlayerFlying(event);
 
             if (!setbacked && flying.isOnGround()) {

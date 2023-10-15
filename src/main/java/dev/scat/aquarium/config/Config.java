@@ -28,7 +28,8 @@ public enum Config {
     NO_LOGS_MESSAGE("no-logs-message", "&c%player% has no logged violations."),
     NO_LOGS_ON_PAGE("no-logs-on-page", "&c%player% has no logged violations on this page."),
     PLAYER_HASNT_JOINED_MESSAGE("player-hasnt-joined-message", "&c'%player%' has not joined this server before."),
-    DELETED_LOGS_MESSAGE("deleted-logs-message", "&aSuccessfully deleted %player%'s logs.");
+    DELETED_LOGS_MESSAGE("deleted-logs-message", "&aSuccessfully deleted %player%'s logs."),
+    MODERN_VERSION_MESSAGE("modern-version-message", "&cYou can not join this server on 1.9+");
 
     private final String path;
     private final Object value;

@@ -111,6 +111,16 @@ public class AxisAlignedBB {
         return new AxisAlignedBB(d0, d1, d2, d3, d4, d5);
     }
 
+    public AxisAlignedBB expand(double minX, double maxX, double minY, double maxY, double minZ, double maxZ) {
+        double d0 = this.minX - minX;
+        double d1 = this.minY - minY;
+        double d2 = this.minZ - minZ;
+        double d3 = this.maxX + maxX;
+        double d4 = this.maxY + maxY;
+        double d5 = this.maxZ + maxZ;
+        return new AxisAlignedBB(d0, d1, d2, d3, d4, d5);
+    }
+
     public AxisAlignedBB union(AxisAlignedBB other) {
         double d0 = Math.min(this.minX, other.minX);
         double d1 = Math.min(this.minY, other.minY);

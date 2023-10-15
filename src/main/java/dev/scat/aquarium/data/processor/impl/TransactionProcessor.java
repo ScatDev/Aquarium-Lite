@@ -12,11 +12,15 @@ import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerWi
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import dev.scat.aquarium.Aquarium;
+import dev.scat.aquarium.check.Check;
+import dev.scat.aquarium.check.impl.badpackets.BadPacketsA;
 import dev.scat.aquarium.data.PlayerData;
 import dev.scat.aquarium.data.processor.Processor;
 import dev.scat.aquarium.util.PacketUtil;
 import dev.thomazz.pledge.api.PacketFrame;
+import dev.thomazz.pledge.api.event.PacketFrameErrorEvent;
 import dev.thomazz.pledge.api.event.PacketFrameReceiveEvent;
+import dev.thomazz.pledge.api.event.PacketFrameTimeoutEvent;
 import dev.thomazz.pledge.api.event.ReceiveType;
 import lombok.Getter;
 import org.bukkit.Bukkit;
@@ -31,6 +35,8 @@ public class TransactionProcessor extends Processor {
     private final Map<Short, Runnable> transactionTasks = new HashMap<>();
     private short transactionId = -17000;
     private boolean responded;
+
+    private Check badPacketsA;
 
     public TransactionProcessor(PlayerData data) {
         super(data);
@@ -77,6 +83,20 @@ public class TransactionProcessor extends Processor {
         }
 
         responded = true;
+    }
+
+    public void handle(PacketFrameErrorEvent event) {
+        if (badPacketsA == null) {
+            badPacketsA = data.getChecks().stream().filter(check -> check.getClass() == BadPacketsA.class).findFirst().get();
+        }
+
+        badPacketsA.flag(event.getType().name());
+    }
+
+    public void handle(PacketFrameTimeoutEvent event) {
+        data.notify("Timed out");
+
+        data.getUser().closeConnection();
     }
 
     public void confirmPre(Runnable runnable) {
